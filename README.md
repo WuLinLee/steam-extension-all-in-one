@@ -1,3 +1,76 @@
+# Steam‑Extension‑All‑in‑One
+
+A userscript (Tampermonkey / Violentmonkey) that adds various quality‑of‑life improvements for the Steam web store and community pages.
+
+---
+
+## ⚠️ Important Notice, Copyright & Disclaimer
+> **This is a remixed, derivative work, NOT fully original code.**
+
+This project aggregates feature ideas, code snippets and implementation logic
+from multiple publicly released, third‑party userscripts shared online.
+Large‑scale restructuring, code refactoring, logic rearrangement, and partial
+rewriting were performed with the assistance of AI tools, followed by manual
+tweaks and debugging.
+
+- **No global open‑source license is granted for the entire repository.**
+  I cannot verify that every segment of code contained here carries explicit,
+  redistributable permission from its original creator.
+  No MIT, GPL, CC0 or any other public‑license terms apply to the project as a whole.
+- Portions of code newly written or significantly transformed by me are shared
+  for reference only; you may not treat the whole repository as open‑source.
+- This project is made available **solely for non‑commercial, personal‑use and educational purposes**.
+  Commercial usage, paid distribution, bundling into paid software or services is prohibited.
+- The script is provided **AS‑IS**, without warranty of any kind, either expressed or implied.
+  There is no guarantee of compatibility, stability, safety or compliance with Steam’s Terms of Service.
+- You use this userscript entirely at your own risk.
+  I take no responsibility for, and shall not be liable for, any account restrictions,
+  bans, data loss, page breakage, or any other direct or indirect harm caused by running this script.
+- If you are the original author of any source code, algorithm, or distinct functional
+  implementation included in this work, and you do not wish your work to appear here,
+  please open a GitHub Issue with sufficient identifying information.
+  I will make reasonable efforts to locate and remove the relevant code segments promptly.
+- Forking this repository is permitted for your own private backup, but you **must not**
+  re‑publish, redistribute, or apply any formal open‑source license to your forked copy,
+  to avoid misleading others into believing all code is freely relicensable.
+
+> 本油猴脚本属于**衍生混改作品，并非全部为从零原创**。
+>
+> 本项目搜集整合了互联网上多个公开第三方用户脚本的功能思路、代码片段与实现逻辑，
+> 使用AI工具完成了大规模结构调整、代码重构、逻辑重排、改写生成，之后经过人工调整与调试。
+>
+> - **整个仓库不存在全局开源许可证**：无法核验每一段代码都拥有可二次公开发布的完整授权，
+>   整个项目不适用 MIT、GPL、CC0 等任何标准开源协议。
+> - 仅由我新增或深度改写的部分可作为学习参考，**不能视作全项目开源**。
+> - 本项目仅限**非商业、个人自用、学习研究**，禁止商用、付费分发、打包进收费产品。
+> - 脚本按现状原样提供，不作任何稳定性、安全性、合规性担保，**不保证遵守Steam平台用户协议**。
+> - 所有使用风险由使用者自行承担，作者不对账号限制、封禁、页面异常、数据问题等任何后果负责。
+> - 如果您是任意一段原始代码、独有功能实现的原作者，不希望成果被收录，请提交 GitHub Issue，
+>   附带能够定位对应代码的信息，我会尽力排查并移除相关内容。
+> - 允许Fork做私人备份，但**禁止把Fork后的仓库重新公开发布、擅自套上开源协议**，
+>   避免误导他人以为全部代码可以随意再分发。
+
+---
+
+## 📦 Installation
+1. Install a userscript manager: Tampermonkey, Violentmonkey, or Greasemonkey.
+2. Open the raw link of `steam‑all‑in‑one.user.js`
+3. Your userscript manager will pop up an installation prompt.
+4. Confirm install.
+
+> Auto‑update is enabled if `@updateURL` is correctly set inside the script header.
+
+---
+
+## 📝 Changelog
+> Version number will be incremented on each functional update or bug fix.
+> No compatibility is guaranteed between different versions.
+
+---
+
+## 📮 Feedback & Issues
+- Bug reports, feature suggestions are welcome via GitHub Issues.
+- Requests to remove copyrighted material will be prioritized.
 # steam-extension-all-in-one
 /*不会写代码没精力维护 截取大佬的代码然后ai改了几百遍的*/
 
