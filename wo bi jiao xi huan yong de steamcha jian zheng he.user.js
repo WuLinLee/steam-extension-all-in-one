@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         !我比较喜欢用的steam插件整合!(再用steam db插件就完美了)
+// @name         !!!!!!!!我比较喜欢用的steam插件整合!!!!!!!!(再用steam db插件就完美了)!!!!!!!!!!
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
-// @version      1.1
-// @description  整合愿望单史低查询、进包标记、HLTB通关时长、PY查价助手
+// @version      1.2
+// @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
 // @match        *://store.steampowered.com/wishlist/*
@@ -1853,4 +1853,62 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             clear: both;
         }
     `);
+})();
+// ========== 5. 单页标题史低（移植自独立脚本） ==========
+(function() {
+    'use strict';
+
+    const m = location.href.match(/(app|bundle|sub)\/(\d+)/);
+    if (!m) return;
+    const type = m[1];
+    const id = m[2];
+
+    const SYM = { CNY: '¥', JPY: '¥', TRY: 'TL', USD: '$', HKD: 'HK$' };
+    const fmt = (v, c) => (v == null || isNaN(v)) ? '?' : ((c === 'JPY' ? SYM[c] + Math.round(v) : SYM[c] + v.toFixed(2)));
+
+    function api(apps, subs, bundles) {
+        const data = { country: 'cn', apps: apps.map(Number).filter(Boolean), subs: subs.map(Number).filter(Boolean), bundles: bundles.map(Number).filter(Boolean), voucher: true, shops: [61] };
+        return new Promise((ok, fail) => {
+            GM_xmlhttpRequest({
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                url: location.protocol + '//api.augmentedsteam.com/prices/v2',
+                data: JSON.stringify(data),
+                onload: r => r.status === 200 ? (() => { try { ok(JSON.parse(r.responseText)); } catch(e) { fail(e); } })() : fail(new Error(r.status)),
+                onerror: fail
+            });
+        });
+    }
+
+    function waitTitle(cb) {
+        const check = () => {
+            const title = document.querySelector('h2.title') || document.querySelector('h2[id$="_title"]');
+            if (title) { cb(title); return true; }
+            return false;
+        };
+        if (check()) return;
+        const iv = setInterval(() => { if (check()) clearInterval(iv); }, 300);
+        setTimeout(() => clearInterval(iv), 10000);
+    }
+
+    async function insert(title) {
+        const apps = type === 'app' ? [id] : [];
+        const subs = type === 'sub' ? [id] : [];
+        const bundles = type === 'bundle' ? [id] : [];
+        try {
+            const resp = await api(apps, subs, bundles);
+            const info = (resp.prices || {})[type + '/' + id];
+            if (!info || !info.lowest || !info.lowest.price) return;
+            const l = info.lowest;
+            const date = new Date(l.timestamp).toLocaleDateString();
+            const price = fmt(l.price.amount, l.price.currency);
+            const disc = l.cut ? '-' + l.cut + '%' : '';
+            const span = document.createElement('span');
+            span.style.cssText = 'display:inline-block;margin-left:15px;font-size:14px;color:#acf;white-space:nowrap;vertical-align:middle;';
+            span.textContent = `史低 ${price} ${disc} (${date})`;
+            title.appendChild(span);
+        } catch(e) { /* 静默 */ }
+    }
+
+    waitTitle(insert);
 })();
