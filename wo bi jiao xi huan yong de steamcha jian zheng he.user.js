@@ -1193,7 +1193,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                 </div>
                 <span class="hltb-status" data-slot="status"></span>
                 <input class="hltb-search-input" data-slot="search-input" type="text" placeholder="${t('search_placeholder')}">
-                <button class="hltb-clear" data-slot="clear-btn"><span>清</span></button>
+                <button class="hltb-clear" data-slot="clear-btn"><span>R</span></button>
                 <a class="hltb-cta" data-slot="cta" target="_blank" rel="noopener noreferrer" hidden><span data-slot="cta-text"></span></a>
             </div>
         `;
