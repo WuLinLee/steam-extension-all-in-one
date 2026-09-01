@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         !我比较喜欢用的steam插件整合!(再用steam db插件就完美了)
-// @namespace    https://greasyfork.org/zh-CN/scripts/steam-all-in-one
+// @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @version      1.0
 // @description  整合愿望单史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
