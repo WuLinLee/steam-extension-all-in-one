@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  整合愿望单史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
-// @license      GPL/MIT (各原脚本保留各自协议)
+// @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
 // @match        *://store.steampowered.com/wishlist/*
 // @match        *://store.steampowered.com/app/*
 // @match        https://steamcommunity.com/*
