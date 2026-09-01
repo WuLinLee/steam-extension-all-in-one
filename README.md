@@ -72,7 +72,7 @@ tweaks and debugging.
 - Bug reports, feature suggestions are welcome via GitHub Issues.
 - Requests to remove copyrighted material will be prioritized.
 # steam-extension-all-in-one
-/*不会写代码没精力维护 截取大佬的代码然后ai改了几百遍的*/
+/*不会写代码没精力维护*/
 
 
 ## 脚本一：愿望单史低查询（帮你判断“现在买亏不亏”）
