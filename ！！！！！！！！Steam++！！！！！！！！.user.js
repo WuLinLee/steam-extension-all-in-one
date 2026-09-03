@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         ！！！！！！！！Steam++！！！！！！！！
-// @namespace    https://github.com/WuLinLee/steam-extension-all-in-one/
-// @version      1.10
+// @name        ！！！！！！！！Steam++！！！！！！！！
+// @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
+// @version      2.1
 // @description  steam++
-// @author       AI服务人类
+// @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
-// @match        *://store.steampowered.com/wishlist/*
 // @match        *://store.steampowered.com/app/*
+// @match        *://store.steampowered.com/wishlist/*
 // @match        https://steamcommunity.com/*
 // @match        *://store.steampowered.com/*
 // @grant        GM_xmlhttpRequest
@@ -16,6 +16,7 @@
 // @grant        GM_addStyle
 // @connect      augmentedsteam.com
 // @connect      bartervg.com
+// @connect      steampy.com
 // @connect      store.steampowered.com
 // @run-at       document-end
 // ==/UserScript==
@@ -65,9 +66,7 @@ steam-extension-all-in-one */
 
 (function() {
     'use strict';
-
     if (!location.href.includes("/wishlist/")) return;
-
     const COUNTRIES = {
         'cn': { name: '🇨🇳 中国', currency: 'CNY' },
         'jp': { name: '🇯🇵 日本', currency: 'JPY' },
@@ -76,7 +75,6 @@ steam-extension-all-in-one */
         'hk': { name: '🇭🇰 香港', currency: 'HKD' },
     };
     const DEFAULT_COUNTRY = 'cn';
-
     const EXCHANGE_TO_CNY = {
         'CNY': 1,
         'JPY': 0.048,
@@ -87,7 +85,6 @@ steam-extension-all-in-one */
     const CURRENCY_SYMBOLS = {
         'CNY': '¥', 'JPY': '¥', 'TRY': 'TL', 'USD': '$', 'HKD': 'HK$',
     };
-
     const getSymbol = cur => CURRENCY_SYMBOLS[cur] || cur;
     const formatPrice = (amount, currency) => {
         if (amount == null || isNaN(amount)) return '?';
@@ -99,9 +96,7 @@ steam-extension-all-in-one */
         const rate = EXCHANGE_TO_CNY[currency];
         return rate ? (amount * rate).toFixed(2) : null;
     };
-
     let currentCountry = DEFAULT_COUNTRY;
-
     function fetchPrices(apps, subs, bundles, country) {
         const data = {
             country,
@@ -127,7 +122,6 @@ steam-extension-all-in-one */
             });
         });
     }
-
     function createCountrySelect(onChange) {
         const select = document.createElement('select');
         select.className = 'shc-select';
@@ -150,7 +144,6 @@ steam-extension-all-in-one */
         });
         return select;
     }
-
     function createPriceElement(info) {
         const lowest = info.lowest;
         const dateStr = new Date(lowest.timestamp).toLocaleDateString();
@@ -162,18 +155,15 @@ steam-extension-all-in-one */
         `;
         return div;
     }
-
     let wishlistPricesCache = {};
     let allLoadedIds = new Set();
     let pendingTimer = null;
-
     function initWishlist() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
         if (rows.length === 0) {
             setTimeout(initWishlist, 500);
             return;
         }
-
         if (!document.getElementById('wishlist-country-controls')) {
             const controls = document.createElement('div');
             controls.id = 'wishlist-country-controls';
@@ -181,18 +171,14 @@ steam-extension-all-in-one */
             controls.appendChild(createCountrySelect(() => {}));
             document.body.appendChild(controls);
         }
-
         fetchAndUpdateWishlist();
-
         const observer = new MutationObserver(() => {
             clearTimeout(pendingTimer);
             pendingTimer = setTimeout(() => { checkAndRequestNew(); }, 300);
         });
         observer.observe(document.body, { childList: true, subtree: true });
-
         setInterval(() => { restoreMissingFromCache(); }, 1000);
     }
-
     function checkAndRequestNew() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
         const neededApp = [], neededSub = [], neededBundle = [];
@@ -214,7 +200,6 @@ steam-extension-all-in-one */
             requestNewIds(neededApp, neededSub, neededBundle);
         }
     }
-
     async function requestNewIds(apps, subs, bundles) {
         try {
             const data = await fetchPrices(apps, subs, bundles, currentCountry);
@@ -223,7 +208,6 @@ steam-extension-all-in-one */
             updateVisibleRows();
         } catch (e) {}
     }
-
     async function fetchAndUpdateWishlist() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
         if (rows.length === 0) return;
@@ -243,7 +227,6 @@ steam-extension-all-in-one */
             }
         });
         if (appIds.length + subIds.length + bundleIds.length === 0) return;
-
         const progress = getProgressDiv();
         progress.style.display = 'block';
         progress.textContent = '正在更新...';
@@ -259,7 +242,6 @@ steam-extension-all-in-one */
             setTimeout(() => { progress.style.display = 'none'; }, 3000);
         }
     }
-
     function updateVisibleRows() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
         rows.forEach(row => {
@@ -270,13 +252,10 @@ steam-extension-all-in-one */
             const key = `${match[1]}/${match[2]}`;
             const info = wishlistPricesCache[key];
             if (!info || !info.lowest || !info.lowest.price) return;
-
             const old = row.querySelector('.game_lowest_price');
             if (old) old.remove();
-
             const div = createPriceElement(info);
             div.style.cssText = 'font-size:12px; color:#acf; display:inline-block; margin-left:auto; padding-left:12px; flex-shrink:0; vertical-align:middle; white-space:nowrap;';
-
             const targetContainer = row.querySelector('div.lZzQoZsDjew-');
             if (targetContainer) {
                 targetContainer.appendChild(div);
@@ -295,7 +274,6 @@ steam-extension-all-in-one */
             }
         });
     }
-
     function restoreMissingFromCache() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
         rows.forEach(row => {
@@ -321,7 +299,6 @@ steam-extension-all-in-one */
             }
         });
     }
-
     function getProgressDiv() {
         let div = document.getElementById('wishlist-progress');
         if (!div) {
@@ -332,12 +309,10 @@ steam-extension-all-in-one */
         }
         return div;
     }
-
     GM_addStyle(`
         .shc-select { background: #2c313f; color: #e2e8f0; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 2px 6px; font-size: 12px; }
         .game_lowest_price { word-break: keep-all; }
     `);
-
     const savedCountry = GM_getValue('steamHistoryCountry', DEFAULT_COUNTRY);
     if (savedCountry && COUNTRIES[savedCountry]) {
         currentCountry = savedCountry;
@@ -347,24 +322,19 @@ steam-extension-all-in-one */
 
 (function() {
     'use strict';
-
     const FA_BUNDLE_CACHE_KEY = 'fa_bundle_cache';
     const FA_BUNDLE_CACHE_KEY_TIME = 'fa_bundle_cache_time';
     const FA_BUNDLE_CACHE_TTL = 48 * 60 * 60 * 1000;
-
     let faBundleData = null;
     let faBundleLoading = false;
-
     function getBundleCount(appId) {
         if (!faBundleData || !appId) return 0;
         var entry = faBundleData[String(appId)];
         return entry ? (entry.bundles || 0) : 0;
     }
-
     function faLoadBundleData() {
         if (faBundleData || faBundleLoading) return;
         faBundleLoading = true;
-
         var cached = GM_getValue(FA_BUNDLE_CACHE_KEY, null);
         var cachedTime = GM_getValue(FA_BUNDLE_CACHE_KEY_TIME, 0);
         if (cached && (Date.now() - cachedTime < FA_BUNDLE_CACHE_TTL)) {
@@ -373,7 +343,6 @@ steam-extension-all-in-one */
             console.log('[Bundle] 缓存命中: ' + Object.keys(cached).length + ' 条记录');
             return;
         }
-
         GM_xmlhttpRequest({
             method: 'GET',
             url: 'https://bartervg.com/browse/bundles/json/',
@@ -405,7 +374,6 @@ steam-extension-all-in-one */
             }
         });
     }
-
     function getAppIdFromNode(node) {
         if (!node || !node.getAttribute) return null;
         var ds = node.getAttribute('data-ds-appid');
@@ -416,7 +384,6 @@ steam-extension-all-in-one */
         var m = /\/app\/(\d+)/.exec(href);
         return m ? m[1] : null;
     }
-
     GM_addStyle(`
         .fa-bundle-flag {
             position: absolute;
@@ -434,32 +401,25 @@ steam-extension-all-in-one */
         }
         .ds_flagged { position: relative !important; }
     `);
-
     function addBundleFlag(node) {
         if (!node) return;
         if (node.querySelector('.fa-bundle-flag')) return;
-
         var appid = getAppIdFromNode(node);
         if (!appid) return;
-
         var count = getBundleCount(Number(appid));
         if (count === 0) return;
-
         node.style.position = 'relative';
         node.classList.add('ds_flagged');
-
         var flag = document.createElement('div');
         flag.className = 'fa-bundle-flag';
         flag.textContent = '进过' + count + '包';
         flag.title = '此游戏曾出现在 ' + count + ' 个 bundle 中（数据来源: Barter.vg）';
         node.appendChild(flag);
     }
-
     var CARD_SELECTOR = [
         '[data-ds-appid]',
         'a[href*="/app/"]'
     ].join(',');
-
     function scanCards() {
         document.querySelectorAll(CARD_SELECTOR).forEach(function(el) {
             if (el.dataset.faBundleScanned) return;
@@ -468,20 +428,16 @@ steam-extension-all-in-one */
             addBundleFlag(el);
         });
     }
-
     var scanTimer = null;
     function scheduleScan() {
         if (scanTimer) clearTimeout(scanTimer);
         scanTimer = setTimeout(scanCards, 300);
     }
-
     function init() {
         faLoadBundleData();
-
         setTimeout(scanCards, 500);
         setTimeout(scanCards, 1500);
         setTimeout(scanCards, 3000);
-
         var observer = new MutationObserver(function(mutations) {
             var needScan = false;
             for (var i = 0; i < mutations.length; i++) {
@@ -494,7 +450,6 @@ steam-extension-all-in-one */
         });
         observer.observe(document.body, { childList: true, subtree: true });
     }
-
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
@@ -504,15 +459,12 @@ steam-extension-all-in-one */
 
 (function() {
     'use strict';
-
     const m = location.href.match(/(app|bundle|sub)\/(\d+)/);
     if (!m) return;
     const type = m[1];
     const id = m[2];
-
     const SYM = { CNY: '¥', JPY: '¥', TRY: 'TL', USD: '$', HKD: 'HK$' };
     const fmt = (v, c) => (v == null || isNaN(v)) ? '?' : ((c === 'JPY' ? SYM[c] + Math.round(v) : SYM[c] + v.toFixed(2)));
-
     function api(apps, subs, bundles) {
         const data = { country: 'cn', apps: apps.map(Number).filter(Boolean), subs: subs.map(Number).filter(Boolean), bundles: bundles.map(Number).filter(Boolean), voucher: true, shops: [61] };
         return new Promise((ok, fail) => {
@@ -526,7 +478,6 @@ steam-extension-all-in-one */
             });
         });
     }
-
     function waitTitle(cb) {
         const check = () => {
             const title = document.querySelector('h2.title') || document.querySelector('h2[id$="_title"]');
@@ -537,7 +488,6 @@ steam-extension-all-in-one */
         const iv = setInterval(() => { if (check()) clearInterval(iv); }, 300);
         setTimeout(() => clearInterval(iv), 10000);
     }
-
     async function insert(title) {
         const apps = type === 'app' ? [id] : [];
         const subs = type === 'sub' ? [id] : [];
@@ -556,18 +506,15 @@ steam-extension-all-in-one */
             title.appendChild(span);
         } catch(e) { }
     }
-
     waitTitle(insert);
 })();
 
 (function() {
     'use strict';
-
     function getAppId() {
         const match = /\/app\/(\d+)/.exec(location.pathname);
         return match ? match[1] : null;
     }
-
     async function fetchAppDetails(appid) {
         try {
             const res = await fetch(`/api/appdetails?appids=${encodeURIComponent(appid)}&l=english&filters=basic`);
@@ -588,20 +535,6 @@ steam-extension-all-in-one */
             return null;
         }
     }
-
-    async function resolveLookupTarget(appid, localizedTitle) {
-        const details = await fetchAppDetails(appid);
-        const isDlc = !!(details && details.type === 'dlc');
-        return {
-            appid,
-            title: (details && details.name) || localizedTitle,
-            isDlc,
-            fallback: isDlc && details.fullgame
-                ? { appid: details.fullgame.appid, title: details.fullgame.name }
-                : null,
-        };
-    }
-
     function getGameTitle() {
         const selectors = ['.apphub_AppName', '#appHubAppName', 'div.apphub_AppName'];
         for (const sel of selectors) {
@@ -614,94 +547,446 @@ steam-extension-all-in-one */
         if (og && og.content) return og.content.trim();
         return null;
     }
-
-    function createButton(gameName) {
+    function createButton(text, href, id, marginRight) {
         const btn = document.createElement('a');
         btn.target = '_blank';
         btn.rel = 'noopener noreferrer';
-        btn.href = `https://howlongtobeat.com/?q=${encodeURIComponent(gameName)}`;
-        btn.id = 'hltb-jump-btn';
+        btn.href = href;
+        btn.id = id;
         btn.style.cssText = `
             display: inline-block;
-            border-radius: 2px;
             border: none;
-            padding: 1px;
-            cursor: pointer;
-            text-decoration: none !important;
-            line-height: 0;
-            font-size: 12px;
-            color: #67c1f5 !important;
-            background: rgba(103, 193, 245, 0.2);
-            margin: 0 8px 0 12px;
-            vertical-align: middle;
-        `;
-        const span = document.createElement('span');
-        span.textContent = '在 HLTB 上查看';
-        span.style.cssText = `
-            display: block;
             padding: 4px 12px;
             border-radius: 2px;
-            font-weight: 400;
+            cursor: pointer;
+            text-decoration: none !important;
+            font-size: 13px;
             line-height: 16px;
+            font-weight: 400;
+            color: #acf !important;
+            background: rgba(103, 193, 245, 0.2);
+            margin-right: ${marginRight || '0'};
+            vertical-align: middle;
+            flex-shrink: 0;
         `;
-        btn.appendChild(span);
-
+        btn.textContent = text;
         btn.addEventListener('mouseenter', () => {
             btn.style.color = '#ffffff !important';
             btn.style.background = 'linear-gradient(to right, #67c1f5 0%, #417a9b 60%)';
         });
         btn.addEventListener('mouseleave', () => {
-            btn.style.color = '#67c1f5 !important';
+            btn.style.color = '#acf !important';
             btn.style.background = 'rgba(103, 193, 245, 0.2)';
         });
         return btn;
     }
-
     async function main() {
         const appid = getAppId();
         if (!appid) return;
-
         const localizedTitle = getGameTitle();
         if (!localizedTitle) return;
-
-        const target = await resolveLookupTarget(appid, localizedTitle);
-        const englishName = target.title;
-
+        let hltbName = localizedTitle;
+        const details = await fetchAppDetails(appid);
+        if (details) {
+            const isDlc = details.type === 'dlc';
+            if (isDlc && details.fullgame) {
+                hltbName = details.fullgame.name;
+            } else if (details.name) {
+                hltbName = details.name;
+            }
+        }
         let attempts = 0;
-        const maxAttempts = 20;
+        const maxAttempts = 30;
         const interval = setInterval(() => {
-            if (document.getElementById('hltb-jump-btn')) {
+            if (document.getElementById('hltb-py-btn') && document.getElementById('steamdb-py-btn')) {
                 clearInterval(interval);
                 return;
             }
-
-            let communityLink = null;
-            const links = document.querySelectorAll('a');
-            for (const a of links) {
-                const span = a.querySelector('span');
-                if (span && span.textContent.trim() === '社区中心') {
-                    communityLink = a;
-                    break;
-                }
+            let targetElement = document.querySelector('div.game_area_purchase_game');
+            if (!targetElement) {
+                targetElement = document.querySelector('div.notice_box_content');
             }
-            if (!communityLink) {
-                communityLink = document.querySelector('a[href*="/community/"]');
-            }
-
-            if (communityLink) {
-                const btn = createButton(englishName);
-                communityLink.parentNode.insertBefore(btn, communityLink);
+            if (targetElement) {
+                const hltbBtn = createButton('HLTB', `https://howlongtobeat.com/?q=${encodeURIComponent(hltbName)}`, 'hltb-py-btn', '6px');
+                const steamdbBtn = createButton('SteamDB', `https://steamdb.info/app/${appid}/`, 'steamdb-py-btn', '0');
+                const container = document.createElement('div');
+                container.style.cssText = 'display: block; text-align: left; margin-top: 8px;';
+                container.appendChild(hltbBtn);
+                container.appendChild(steamdbBtn);
+                targetElement.appendChild(container);
+                console.log('[合并] HLTB 和 SteamDB 按钮已插入到大框内部左下角');
                 clearInterval(interval);
             }
-
             attempts++;
-            if (attempts >= maxAttempts) clearInterval(interval);
+            if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                console.log('[合并] 未找到购买框或停售框，放弃插入');
+            }
         }, 300);
     }
-
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', main);
     } else {
         main();
     }
+})();
+
+(function() {
+    'use strict';
+    if (window.hasCortanaRun) return;
+    window.hasCortanaRun = true;
+    console.log("Cortana V2.10 (油猴简化版): 引擎启动");
+    const API_PY_STORE = "https://steampy.com/xboot/common/plugIn/getGame";
+    const API_PY_SEARCH = "https://steampy.com/xboot/usSteamGame/saleKeyByName";
+    const API_STEAM_DETAILS = "https://store.steampowered.com/api/appdetails";
+    const ALLOWED_DOMAINS = ["steampy.com", "store.steampowered.com"];
+    function proxyRequest(url, callback) {
+        try {
+            const urlObj = new URL(url);
+            const isAllowed = ALLOWED_DOMAINS.some(domain => urlObj.hostname === domain || urlObj.hostname.endsWith('.' + domain));
+            if (!isAllowed) {
+                console.error(`[Cortana] 拦截非法请求: ${url}`);
+                callback(null);
+                return;
+            }
+        } catch (e) {
+            callback(null);
+            return;
+        }
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: url,
+            onload: function(response) {
+                try {
+                    const data = JSON.parse(response.responseText);
+                    callback(data);
+                } catch (e) {
+                    console.error('[Cortana] JSON解析失败', e);
+                    callback(null);
+                }
+            },
+            onerror: function(err) {
+                console.error('[Cortana] 请求失败', err);
+                callback(null);
+            },
+            ontimeout: function() {
+                console.error('[Cortana] 请求超时');
+                callback(null);
+            },
+            timeout: 10000
+        });
+    }
+    function getSubIdsFromSteam(appId, callback) {
+        const url = `${API_STEAM_DETAILS}?appids=${appId}&cc=cn&l=schinese`;
+        proxyRequest(url, (data) => {
+            if (!data || !data[appId] || !data[appId].success) {
+                callback(null);
+                return;
+            }
+            const gameData = data[appId].data;
+            const subIds = [];
+            const subNames = {};
+            if (gameData.package_groups) {
+                gameData.package_groups.forEach(group => {
+                    group.subs.forEach(sub => {
+                        if (sub.can_get_free_license === '0' || sub.price_in_cents_with_discount > 0) {
+                            subIds.push(sub.packageid);
+                            let name = sub.option_text.replace(/Purchase |Buy /gi, '').replace(/\(.*\)/, '').trim();
+                            subNames[sub.packageid] = name;
+                        }
+                    });
+                });
+            }
+            callback({ ids: subIds, names: subNames });
+        });
+    }
+    function fetchPricesBySubIds(subIdList, nameMap, appId, callback) {
+        if (!subIdList || subIdList.length === 0) { callback([]); return; }
+        const targets = subIdList.slice(0, 3);
+        let results = [];
+        let completed = 0;
+        targets.forEach(subId => {
+            const url = `${API_PY_STORE}?subId=${subId}&appId=${appId}&type=subid`;
+            proxyRequest(url, (data) => {
+                if (data && data.success && data.result) {
+                    const res = data.result;
+                    res.versionName = nameMap[subId] || "标准版";
+                    results.push(res);
+                }
+                completed++;
+                if (completed === targets.length) callback(results);
+            });
+        });
+    }
+    function fetchPriceByName(gameName, targetAppId, callback) {
+        const cleanName = gameName.replace(/[™®©]/g, '').replace(/[:：-]/g, ' ').trim();
+        const url = `${API_PY_SEARCH}?pageNumber=1&pageSize=20&sort=keyTx&order=asc&gameName=${encodeURIComponent(cleanName)}`;
+        proxyRequest(url, (data) => {
+            if (data && data.success && data.result) {
+                const list = data.result.content || (Array.isArray(data.result) ? data.result : []);
+                let matches = list.filter(item => String(item.appId) === String(targetAppId));
+                if (matches.length === 0) {
+                    matches = list.filter(item => item.gameName.toLowerCase().includes(cleanName.toLowerCase())).slice(0, 3);
+                }
+                matches.forEach(m => m.versionName = m.gameName);
+                callback(matches);
+            } else {
+                callback([]);
+            }
+        });
+    }
+    function generateHTML(results) {
+        if (!results || results.length === 0) {
+            return `<div class="cortana-price-box cortana-simple"><span style="color:#888;">未找到 SteamPy 货源</span></div>`;
+        }
+        let valid = results.filter(item => {
+            const dai = Number(item.daiPrice) || 0;
+            const key = Number(item.keyPrice) || 0;
+            return dai > 0 || key > 0;
+        });
+        if (valid.length === 0) {
+            return `<div class="cortana-price-box cortana-simple"><span style="color:#888;">无有效价格</span></div>`;
+        }
+        const item = valid[0];
+        let displayName = item.versionName || item.gameName || "版本";
+        displayName = displayName.replace(/[¥$€£]\s*[\d,]+(\.\d{1,2})?/g, '').trim();
+        if (!displayName) displayName = "版本";
+        const dai = Number(item.daiPrice) || 0;
+        const key = Number(item.keyPrice) || 0;
+        let html = `<div class="cortana-price-box cortana-simple" style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px;">`;
+        html += `<span style="font-weight:bold; color:#66c0f4; font-size:13px;">${displayName}</span>`;
+        html += `<div style="display:flex; gap:8px;">`;
+        if (dai > 0) {
+            html += `<a href="https://steampy.com/hotGameDetail?gameId=${item.id}" target="_blank" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">代购购买</a>`;
+        }
+        if (key > 0) {
+            html += `<a href="https://steampy.com/cdkDetail?name=cn&gameId=${item.id}" target="_blank" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">CDK购买</a>`;
+        }
+        if (dai === 0 && key === 0) {
+            html += `<span style="color:#888;">无购买选项</span>`;
+        }
+        html += `</div></div>`;
+        return html;
+    }
+    function handleStorePage() {
+        if (!location.pathname.includes('/app/')) return;
+        const appId = location.pathname.match(/\/app\/(\d+)/)?.[1];
+        if (!appId) return;
+        document.querySelectorAll('form[name^="add_to_cart_"]').forEach(form => {
+            if (form.dataset.cortana) return;
+            form.dataset.cortana = "true";
+            const input = form.querySelector('input[name="subid"], input[name="bundleid"]');
+            if (input) {
+                const url = `${API_PY_STORE}?subId=${input.value}&appId=${appId}&type=${input.name}`;
+                proxyRequest(url, (data) => {
+                    if (data && data.success) {
+                        const div = document.createElement('div');
+                        const item = data.result;
+                        item.versionName = "当前选择版本";
+                        div.innerHTML = generateHTML([item]);
+                        const box = div.firstElementChild;
+                        if (box) form.parentElement.appendChild(box);
+                    }
+                });
+            }
+        });
+    }
+    function handleWishlistPage() {
+        if (!location.pathname.includes('/wishlist/')) return;
+        const rows = document.querySelectorAll('div[data-index]');
+        rows.forEach(row => {
+            if (row.dataset.cortana) return;
+            const appLinks = row.querySelectorAll('a[href*="/app/"]');
+            let gameName = "";
+            let appId = "";
+            for (const link of appLinks) {
+                if (!appId) { const m = link.href.match(/\/app\/(\d+)/); if (m) appId = m[1]; }
+                if (link.innerText && link.innerText.trim().length > 0) gameName = link.innerText.trim();
+            }
+            if (!gameName && row.querySelector('.title')) gameName = row.querySelector('.title').innerText.trim();
+            if (!appId || !gameName) return;
+            let targetContainer = row.querySelector('.a3nhjc9lykk-');
+            if (!targetContainer) {
+                const btns = row.querySelectorAll('button');
+                for (let btn of btns) {
+                    if (btn.innerText.match(/(车|Cart|Add)/)) { targetContainer = btn.parentElement; break; }
+                }
+            }
+            if (!targetContainer) return;
+            row.dataset.cortana = "true";
+            const btn = document.createElement('div');
+            btn.innerText = 'PY查价';
+            btn.className = 'py-check-btn';
+            btn.style.cssText = `
+                align-self: center;
+                order: -1;
+                display: inline-block;
+                background: transparent;
+                color: #66c0f4;
+                border: 1px solid rgba(102, 192, 244, 0.3);
+                border-radius: 4px;
+                padding: 0 10px;
+                height: 26px;
+                line-height: 24px;
+                font-size: 13px;
+                cursor: pointer;
+                margin-right: 12px;
+                white-space: nowrap;
+                user-select: none;
+                font-family: "Motiva Sans", Sans-serif;
+                transition: none;
+            `;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (btn.classList.contains('loading')) return;
+                if (btn.dataset.transformed === 'true') return;
+                btn.innerText = '查价中...';
+                btn.classList.add('loading');
+                btn.style.opacity = '0.7';
+                btn.style.cursor = 'wait';
+                getSubIdsFromSteam(appId, (steamData) => {
+                    const handleResults = (results) => {
+                        btn.innerText = '';
+                        btn.classList.remove('loading');
+                        btn.style.opacity = '1';
+                        btn.style.cursor = 'default';
+                        if (!results || results.length === 0) {
+                            btn.textContent = '无价格';
+                            btn.style.color = '#888';
+                            btn.style.borderColor = '#888';
+                            btn.style.cursor = 'default';
+                            btn.onclick = null;
+                            return;
+                        }
+                        let valid = results.filter(item => {
+                            const dai = Number(item.daiPrice) || 0;
+                            const key = Number(item.keyPrice) || 0;
+                            return dai > 0 || key > 0;
+                        });
+                        if (valid.length === 0) {
+                            btn.textContent = '无价格';
+                            btn.style.color = '#888';
+                            btn.style.borderColor = '#888';
+                            btn.style.cursor = 'default';
+                            btn.onclick = null;
+                            return;
+                        }
+                        const item = valid[0];
+                        const dai = Number(item.daiPrice) || 0;
+                        const key = Number(item.keyPrice) || 0;
+                        btn.innerHTML = '';
+                        btn.style.background = 'transparent';
+                        btn.style.color = '#66c0f4';
+                        btn.style.borderColor = 'rgba(102, 192, 244, 0.3)';
+                        btn.style.padding = '0 10px';
+                        btn.style.display = 'flex';
+                        btn.style.gap = '8px';
+                        btn.style.alignItems = 'center';
+                        btn.style.justifyContent = 'center';
+                        btn.style.cursor = 'default';
+                        btn.dataset.transformed = 'true';
+                        btn.onclick = null;
+                        if (dai > 0) {
+                            const a1 = document.createElement('a');
+                            a1.href = `https://steampy.com/hotGameDetail?gameId=${item.id}`;
+                            a1.target = '_blank';
+                            a1.textContent = '代';
+                            a1.style.cssText = `
+                                color: #66c0f4;
+                                text-decoration: none;
+                                padding: 0;
+                                font-size: 13px;
+                                font-weight: normal;
+                            `;
+                            a1.onmouseenter = () => { a1.style.color = '#fff'; };
+                            a1.onmouseleave = () => { a1.style.color = '#66c0f4'; };
+                            btn.appendChild(a1);
+                        }
+                        if (key > 0) {
+                            const a2 = document.createElement('a');
+                            a2.href = `https://steampy.com/cdkDetail?name=cn&gameId=${item.id}`;
+                            a2.target = '_blank';
+                            a2.textContent = 'K';
+                            a2.style.cssText = `
+                                color: #66c0f4;
+                                text-decoration: none;
+                                padding: 0;
+                                font-size: 13px;
+                                font-weight: normal;
+                            `;
+                            a2.onmouseenter = () => { a2.style.color = '#fff'; };
+                            a2.onmouseleave = () => { a2.style.color = '#66c0f4'; };
+                            btn.appendChild(a2);
+                        }
+                    };
+                    if (steamData && steamData.ids.length > 0) {
+                        fetchPricesBySubIds(steamData.ids, steamData.names, appId, (prices) => {
+                            if (prices.length > 0) handleResults(prices);
+                            else fetchPriceByName(gameName, appId, handleResults);
+                        });
+                    } else {
+                        fetchPriceByName(gameName, appId, handleResults);
+                    }
+                });
+            };
+            targetContainer.style.display = 'flex';
+            targetContainer.style.alignItems = 'center';
+            targetContainer.insertBefore(btn, targetContainer.firstChild);
+        });
+    }
+    let debounceTimer = null;
+    const observer = new MutationObserver(() => {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            handleStorePage();
+            handleWishlistPage();
+        }, 500);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => {
+        handleStorePage();
+        handleWishlistPage();
+    }, 500);
+    GM_addStyle(`
+        .cortana-price-box {
+            background: linear-gradient(135deg, #1b2838 0%, #101822 100%);
+            border: 1px solid #4c6b22;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-family: "Motiva Sans", Sans-serif;
+            color: #c6d4df;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        .cortana-simple {
+            padding: 4px 10px !important;
+            min-height: 32px;
+        }
+        .cortana-simple span {
+            font-size: 13px;
+        }
+        .buy-btn {
+            background: #2a475e;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 2px;
+            text-decoration: none;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        .buy-btn:hover {
+            background: #66c0f4;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .wishlist_row .cortana-price-box {
+            margin: 6px 20px 6px 20px;
+            border-color: #66c0f4;
+            clear: both;
+        }
+    `);
 })();
