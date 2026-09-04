@@ -164,13 +164,7 @@ steam-extension-all-in-one */
             setTimeout(initWishlist, 500);
             return;
         }
-        if (!document.getElementById('wishlist-country-controls')) {
-            const controls = document.createElement('div');
-            controls.id = 'wishlist-country-controls';
-            controls.style.cssText = 'position:fixed; top:10px; right:10px; z-index:9999;';
-            controls.appendChild(createCountrySelect(() => {}));
-            document.body.appendChild(controls);
-        }
+
         fetchAndUpdateWishlist();
         const observer = new MutationObserver(() => {
             clearTimeout(pendingTimer);
@@ -309,15 +303,14 @@ steam-extension-all-in-one */
         }
         return div;
     }
-    GM_addStyle(`
-        .shc-select { background: #2c313f; color: #e2e8f0; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 2px 6px; font-size: 12px; }
-        .game_lowest_price { word-break: keep-all; }
-    `);
-    const savedCountry = GM_getValue('steamHistoryCountry', DEFAULT_COUNTRY);
-    if (savedCountry && COUNTRIES[savedCountry]) {
-        currentCountry = savedCountry;
-    }
-    initWishlist();
+ GM_addStyle(`
+    .game_lowest_price { word-break: keep-all; }
+`);
+// 永远固定为国区 CNY，不再读取存储
+currentCountry = DEFAULT_COUNTRY;
+GM_deleteValue('steamHistoryCountry');
+
+initWishlist();
 })();
 
 (function() {
