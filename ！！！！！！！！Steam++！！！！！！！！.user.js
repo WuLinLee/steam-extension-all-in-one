@@ -164,7 +164,13 @@ steam-extension-all-in-one */
             setTimeout(initWishlist, 500);
             return;
         }
-
+        if (!document.getElementById('wishlist-country-controls')) {
+            const controls = document.createElement('div');
+            controls.id = 'wishlist-country-controls';
+            controls.style.cssText = 'position:fixed; top:10px; right:10px; z-index:9999;';
+            controls.appendChild(createCountrySelect(() => {}));
+            document.body.appendChild(controls);
+        }
         fetchAndUpdateWishlist();
         const observer = new MutationObserver(() => {
             clearTimeout(pendingTimer);
@@ -303,14 +309,15 @@ steam-extension-all-in-one */
         }
         return div;
     }
- GM_addStyle(`
-    .game_lowest_price { word-break: keep-all; }
-`);
-// 永远固定为国区 CNY，不再读取存储
-currentCountry = DEFAULT_COUNTRY;
-GM_deleteValue('steamHistoryCountry');
-
-initWishlist();
+    GM_addStyle(`
+        .shc-select { background: #2c313f; color: #e2e8f0; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 2px 6px; font-size: 12px; }
+        .game_lowest_price { word-break: keep-all; }
+    `);
+    const savedCountry = GM_getValue('steamHistoryCountry', DEFAULT_COUNTRY);
+    if (savedCountry && COUNTRIES[savedCountry]) {
+        currentCountry = savedCountry;
+    }
+    initWishlist();
 })();
 
 (function() {
@@ -588,6 +595,9 @@ initWishlist();
                 hltbName = details.name;
             }
         }
+        // 清理商标符号，提高 HLTB 搜索匹配率
+        hltbName = hltbName.replace(/[™®©]/g, '').trim();
+
         let attempts = 0;
         const maxAttempts = 30;
         const interval = setInterval(() => {
@@ -600,7 +610,6 @@ initWishlist();
                 targetElement = document.querySelector('div.notice_box_content');
             }
             if (targetElement) {
-                hltbName = hltbName.replace(/[™®©]/g, '').trim();
                 const hltbBtn = createButton('HLTB', `https://howlongtobeat.com/?q=${encodeURIComponent(hltbName)}`, 'hltb-py-btn', '6px');
                 const steamdbBtn = createButton('SteamDB', `https://steamdb.info/app/${appid}/`, 'steamdb-py-btn', '0');
                 const container = document.createElement('div');
