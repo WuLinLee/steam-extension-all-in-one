@@ -607,7 +607,7 @@ steam-extension-all-in-one */
                 targetElement = document.querySelector('div.notice_box_content');
             }
             if (targetElement) {
-                hltbName = hltbName.replace(/[™®©'-]/g, '').trim();
+                hltbName = hltbName.replace(/[’']s/g, '').replace(/[™®©'-]/g, '').trim();
                 const hltbBtn = createButton('HLTB', `https://howlongtobeat.com/?q=${encodeURIComponent(hltbName)}`, 'hltb-py-btn', '6px');
                 const steamdbBtn = createButton('SteamDB', `https://steamdb.info/app/${appid}/`, 'steamdb-py-btn', '0');
                 const container = document.createElement('div');
