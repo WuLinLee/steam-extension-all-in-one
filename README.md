@@ -2,11 +2,11 @@
 
 ## 一键安装
 
-### 脚本一：愿望单史低 + 进包标记 + HLTB 通关时长 (Tampermonkey 完整版)
+### 脚本一：Tampermonkey 整合功能 (Tampermonkey 完整版)
 
 [![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
-### 脚本二：Steam++ 整合功能(Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用)
+### 脚本二：Steam++ 整合功能 (Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用)
 
 [![安装脚本二](https://img.shields.io/badge/Install-Script%202-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
@@ -171,4 +171,4 @@ Steam 官方商店的价格不一定是最便宜的。SteamPy 是一个国内的
 | 我想知道这游戏要玩多久才通关 | 用 **HLTB** |
 | 我想找比 Steam 官方更便宜的购买渠道 | 用 **PY查价** |
 
-四个脚本各有分工，**互不打架**，装在一起就是一套完整的 Steam 购物决策辅助系统。看完价格看时长，看完时长看渠道，全方面帮你省钱省时间。😊*/
+四个脚本各有分工，**互不打架**，装在一起就是一套完整的 Steam 购物决策辅助系统。看完价格看时长，看完时长看渠道，全方面帮你省钱省时间。😊
