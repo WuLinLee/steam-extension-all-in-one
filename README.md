@@ -3,11 +3,11 @@
 ## 一键安装
 
 ### 脚本一：愿望单史低 + 进包标记 + HLTB 通关时长 (Tampermonkey 完整版)
-导入Tampermonkey
+
 [![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
 ### 脚本二：Steam++ 整合功能(Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用)
-导入Tampermonkey
+
 [![安装脚本二](https://img.shields.io/badge/Install-Script%202-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
 > 点击上方，脚本管理器会自动弹出安装确认框，点击“安装”即可(Tampermonkey 或 Violentmonkey)。
