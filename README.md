@@ -2,7 +2,7 @@
 
 ## 一键安装
 
-### 脚本一：Tampermonkey 整合功能（Tampermonkey 完整版）
+### 脚本一：Tampermonkey 整合功能（Tampermonkey 完整版 steam++上 HLTB有问题）
 
 [![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![下载脚本一](https://img.shields.io/badge/Download-Script%201-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
