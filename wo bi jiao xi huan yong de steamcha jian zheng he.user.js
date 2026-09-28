@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         !!!!!!!!我比较喜欢用的steam插件整合!!!!!!!!(再用steam db插件就完美了)!!!!!!!!!!
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
-// @version      1.3
+// @version      1.4
 // @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -505,7 +505,6 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             white-space: nowrap;
             pointer-events: none;
         }
-        .ds_flagged { position: relative !important; }
     `);
 
     function addBundleFlag(node) {
@@ -518,14 +517,22 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         var count = getBundleCount(Number(appid));
         if (count === 0) return;
 
-        node.style.position = 'relative';
-        node.classList.add('ds_flagged');
+        // 关键：把标签挂到卡片内部的图片容器上，而不是整个 <a> 卡片
+        // 这样只影响图片区域，不会撑高卡片，也不会影响轮播布局
+        var mountTarget = node.querySelector('.capsule_image_ctn')
+                       || node.querySelector('.capsule')
+                       || node;
+
+        // 只给挂载点加 relative，不动整个卡片
+        if (getComputedStyle(mountTarget).position === 'static') {
+            mountTarget.style.position = 'relative';
+        }
 
         var flag = document.createElement('div');
         flag.className = 'fa-bundle-flag';
         flag.textContent = '进过' + count + '包';
         flag.title = '此游戏曾出现在 ' + count + ' 个 bundle 中（数据来源: Barter.vg）';
-        node.appendChild(flag);
+        mountTarget.appendChild(flag);
     }
 
     var CARD_SELECTOR = [
@@ -574,7 +581,6 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         init();
     }
 })();
-
 // ========== 3. HLTB for Steam（API 修复版） ==========
 (function() {
     'use strict';
