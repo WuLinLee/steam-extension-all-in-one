@@ -12,10 +12,10 @@
 
 > 点击 **Install** 按钮，脚本管理器会自动弹出安装确认框。
 > 点击 **Download** 按钮，会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件。
-A userscript (Tampermonkey / Violentmonkey) that adds various quality‑of‑life improvements for the Steam web store and community pages.
+
 
 ---
-
+A userscript (Tampermonkey / Violentmonkey) that adds various quality‑of‑life improvements for the Steam web store and community pages.
 ## ⚠️ Important Notice, Copyright & Disclaimer
 > **This is a remixed, derivative work, NOT fully original code.**
 
