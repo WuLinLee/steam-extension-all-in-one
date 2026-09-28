@@ -10,12 +10,12 @@
 
 [![安装脚本二](https://img.shields.io/badge/Install-Script%202-lightgrey?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![下载脚本二](https://img.shields.io/badge/Download-Script%202-blue?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
-> 点击 **Install** 按钮，脚本管理器会自动弹出安装确认框。
-> 点击 **Download** 按钮，会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件。
+> 点击 **INSTALL** 按钮，脚本管理器会自动弹出安装确认框。
+> 点击 **DOWNLOAD** 按钮，会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件。
 
 ### **Steam++**（瓦特工具箱）导入脚本操作顺序
 
-> **点击上方 Download 按钮（建议下载脚本二）会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件，下载警告点保留**
+> **点击上方 DOWNLOAD 按钮（建议下载脚本二）会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件，下载警告点保留**
 
 > **网络加速 → 加速设置 → 打开 “启用脚本”**
 
