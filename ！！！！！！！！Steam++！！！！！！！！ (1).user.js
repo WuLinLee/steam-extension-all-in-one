@@ -384,7 +384,7 @@ steam-extension-all-in-one */
         var m = /\/app\/(\d+)/.exec(href);
         return m ? m[1] : null;
     }
-    GM_addStyle(`
+        GM_addStyle(`
         .fa-bundle-flag {
             position: absolute;
             right: 0;
@@ -399,22 +399,26 @@ steam-extension-all-in-one */
             white-space: nowrap;
             pointer-events: none;
         }
-        .ds_flagged { position: relative !important; }
     `);
-    function addBundleFlag(node) {
+       function addBundleFlag(node) {
         if (!node) return;
         if (node.querySelector('.fa-bundle-flag')) return;
         var appid = getAppIdFromNode(node);
         if (!appid) return;
         var count = getBundleCount(Number(appid));
         if (count === 0) return;
-        node.style.position = 'relative';
-        node.classList.add('ds_flagged');
+        // 挂到图片容器上，不动整张卡片，避免撑长布局
+        var mountTarget = node.querySelector('.capsule_image_ctn')
+                       || node.querySelector('.capsule')
+                       || node;
+        if (getComputedStyle(mountTarget).position === 'static') {
+            mountTarget.style.position = 'relative';
+        }
         var flag = document.createElement('div');
         flag.className = 'fa-bundle-flag';
         flag.textContent = '进过' + count + '包';
         flag.title = '此游戏曾出现在 ' + count + ' 个 bundle 中（数据来源: Barter.vg）';
-        node.appendChild(flag);
+        mountTarget.appendChild(flag);
     }
     var CARD_SELECTOR = [
         '[data-ds-appid]',
