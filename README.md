@@ -20,11 +20,11 @@
 
 > **Edge → 右上角三个点 … → 扩展 → 获取 Microsoft Edge 扩展 → 搜索 Tampermonkey 或者 篡改猴 → 获取 → 添加扩展 → 完成**
 
-### **Steam++**（瓦特工具箱）导入脚本操作顺序 [Steam++官网](https://steampp.net/)
+### **Steam++**（瓦特工具箱）导入脚本二操作顺序 [Steam++官网](https://steampp.net/)
 
 > **点上面蓝色的下载安装 Steam++**
 
-> **点击上方蓝色的 DOWNLOAD Script 按钮（建议下载脚本二）会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件，下载警告点保留**
+> **点击上方蓝色的 DOWNLOAD SCRIPT2 按钮（建议下载脚本二）会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件，下载警告点保留**
 
 > **网络加速 → 加速设置 → 打开 “启用脚本”**
 
