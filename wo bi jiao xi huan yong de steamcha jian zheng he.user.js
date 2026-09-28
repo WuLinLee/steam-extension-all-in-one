@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         !!!!!!!!我比较喜欢用的steam插件整合!!!!!!!!(再用steam db插件就完美了)!!!!!!!!!!
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
-// @version      1.2
+// @version      1.3
 // @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -575,7 +575,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     }
 })();
 
-// ========== 3. HLTB for Steam（原脚本3，取一份） ==========
+// ========== 3. HLTB for Steam（API 修复版） ==========
 (function() {
     'use strict';
 
@@ -590,7 +590,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         search_placeholder: '输入英文名后按 Enter 重搜',
         loading: '加载中…',
         error_no_match: '在 HowLongToBeat 上未找到匹配项。',
-        error_endpoint: '无法发现 HLTB API 端点。',
+        error_endpoint: 'HLTB 接口认证失败，请稍后重试。',
         error_network: '获取 HLTB 数据时出现网络错误。',
         unit_hours_short: '小时',
         value_unknown: '—',
@@ -620,8 +620,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             });
         },
         async removeGame(appid) {
-            const key = this.GAME_KEY_PREFIX + appid;
-            await this._remove(key);
+            await this._remove(this.GAME_KEY_PREFIX + appid);
         },
         async getEndpoint() {
             const entry = await this._get(this.ENDPOINT_KEY);
@@ -639,8 +638,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             GM_deleteValue(listKey);
         },
         async countGames() {
-            const listKey = 'hltb_keys_list';
-            const list = JSON.parse(GM_getValue(listKey, '[]'));
+            const list = JSON.parse(GM_getValue('hltb_keys_list', '[]'));
             return list.filter(k => k.startsWith(this.GAME_KEY_PREFIX)).length;
         },
         _ttlFor(entry) {
@@ -681,8 +679,11 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     const HltbClient = {
         HLTB_ORIGIN: 'https://howlongtobeat.com',
         HOMEPAGE_URL: 'https://howlongtobeat.com/',
-        DEFAULT_SEARCH_PATH: '/api/search/site',
-        USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+        DEFAULT_SEARCH_PATH: '/api/search',
+        USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+
+        // 端点回退列表（按优先级尝试）
+        FALLBACK_PATHS: ['/api/search', '/api/finder', '/api/find', '/api/bleed', '/api/s'],
 
         _request(method, url, headers, body) {
             return new Promise((resolve, reject) => {
@@ -691,16 +692,16 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                     url: url,
                     headers: headers || {},
                     data: body,
+                    timeout: 15000,
                     onload: function(response) {
                         if (response.status >= 200 && response.status < 300) {
                             resolve(response);
                         } else {
-                            reject(new Error(`HTTP ${response.status}: ${response.statusText}`));
+                            reject(new Error(`HTTP ${response.status}`));
                         }
                     },
-                    onerror: function(err) {
-                        reject(new Error('Network error'));
-                    }
+                    onerror: function() { reject(new Error('Network error')); },
+                    ontimeout: function() { reject(new Error('Timeout')); },
                 });
             });
         },
@@ -728,60 +729,62 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             const re = /<script\b[^>]*\bsrc=(["'])(.*?)\1[^>]*>/gi;
             let m;
             while ((m = re.exec(html)) !== null) {
-                try {
-                    urls.push(new URL(m[2], this.HOMEPAGE_URL).toString());
-                } catch (e) {}
+                try { urls.push(new URL(m[2], this.HOMEPAGE_URL).toString()); } catch (e) {}
             }
             return urls;
         },
 
         _extractSearchPathFromScript(scriptText) {
-            if (!scriptText.includes('searchTerms') || !scriptText.includes('searchOptions')) return null;
-            const initRe = /["'`]\/api\/((?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+)\/init\b/g;
-            let m;
-            while ((m = initRe.exec(scriptText)) !== null) {
-                if (m[1]) return `/api/${m[1]}`;
-            }
-            const pattern = /fetch\s*\(\s*["'`](\/api\/[a-zA-Z0-9_/-]+)[^"'`]*["'`]\s*,\s*\{[^}]*method:\s*["'`]POST["'`]/gi;
-            while ((m = pattern.exec(scriptText)) !== null) {
-                const candidate = m[1].replace(/\/+$/, '');
-                if (candidate && candidate !== '/api') return candidate;
+            // 兼容新旧多种模式的端点提取
+            const patterns = [
+                /["'`](\/api\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)\/init\b/g,
+                /["'`](\/api\/[a-zA-Z0-9_-]+)\/init\b/g,
+                /fetch\s*\(\s*["'`](\/api\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*)["'`]/gi,
+                /["'`](\/api\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*)["'`]/g,
+            ];
+            for (const re of patterns) {
+                let m;
+                while ((m = re.exec(scriptText)) !== null) {
+                    const path = m[1];
+                    if (!path || path === '/api' || path.length < 6) continue;
+                    // 排除明显的静态资源路径
+                    if (/\.(js|css|png|jpg|svg|woff|ico)$/i.test(path)) continue;
+                    return path;
+                }
             }
             return null;
         },
 
         async discoverSearchPath() {
-            let html;
             try {
-                html = await this._fetchText(this.HOMEPAGE_URL);
-            } catch (e) {
-                return this.DEFAULT_SEARCH_PATH;
-            }
-            const scripts = this._extractScriptUrls(html);
-            for (const src of scripts) {
-                try {
-                    const u = new URL(src);
-                    if (u.origin !== this.HLTB_ORIGIN || !u.pathname.endsWith('.js')) continue;
-                    const body = await this._fetchText(src);
-                    const found = this._extractSearchPathFromScript(body);
-                    if (found) return found;
-                } catch (e) {}
-            }
+                const html = await this._fetchText(this.HOMEPAGE_URL);
+                const scripts = this._extractScriptUrls(html);
+                for (const src of scripts) {
+                    try {
+                        const u = new URL(src);
+                        if (u.origin !== this.HLTB_ORIGIN || !u.pathname.endsWith('.js')) continue;
+                        const body = await this._fetchText(src);
+                        const found = this._extractSearchPathFromScript(body);
+                        if (found) return found;
+                    } catch (e) {}
+                }
+            } catch (e) {}
             return this.DEFAULT_SEARCH_PATH;
         },
 
         _parseAuth(data) {
             if (!data || typeof data !== 'object') return null;
             const token = typeof data.token === 'string' ? data.token : null;
+            if (!token) return null;
             let hpKey = null, hpVal = null;
             for (const [name, value] of Object.entries(data)) {
                 if (typeof value !== 'string') continue;
                 const lower = name.toLowerCase();
-                if (!hpKey && lower.includes('key')) hpKey = value;
+                if (!hpKey && lower.includes('key') && lower !== 'token') hpKey = value;
                 else if (!hpVal && lower.includes('val')) hpVal = value;
             }
-            if (token && hpKey && hpVal) return { token, hpKey, hpVal };
-            return null;
+            // 即使 hpKey/hpVal 缺失也返回（部分端点不需要）
+            return { token, hpKey, hpVal };
         },
 
         async fetchAuth(searchPath) {
@@ -817,20 +820,22 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                     randomizer: 0,
                 },
             };
-            body[auth.hpKey] = auth.hpVal;
+            // 动态轮换字段
+            if (auth && auth.hpKey && auth.hpVal) {
+                body[auth.hpKey] = auth.hpVal;
+            }
             return body;
         },
 
         async postSearch(searchPath, auth, body) {
             const headers = {
                 'x-auth-token': auth.token,
-                'x-hp-key': auth.hpKey,
-                'x-hp-val': auth.hpVal,
-                'Content-Type': 'application/json',
+                'Accept': '*/*',
             };
+            if (auth.hpKey) headers['x-hp-key'] = auth.hpKey;
+            if (auth.hpVal) headers['x-hp-val'] = auth.hpVal;
             const url = this.HLTB_ORIGIN + searchPath;
-            const json = await this._fetchJSON(url, 'POST', headers, JSON.stringify(body));
-            return json;
+            return await this._fetchJSON(url, 'POST', headers, JSON.stringify(body));
         },
 
         async _loadBootstrap() {
@@ -838,8 +843,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             if (!cached) return { searchPath: null, auth: null };
             return {
                 searchPath: cached.searchPath || null,
-                auth: cached.auth && cached.auth.token && cached.auth.hpKey && cached.auth.hpVal
-                    ? cached.auth : null,
+                auth: cached.auth && cached.auth.token ? cached.auth : null,
             };
         },
 
@@ -853,15 +857,22 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                 await this._saveBootstrap(searchPath, state.auth);
                 return { searchPath, auth: state.auth };
             }
+            // 优先用发现到的路径
             try {
                 const auth = await this.fetchAuth(searchPath);
                 await this._saveBootstrap(searchPath, auth);
                 return { searchPath, auth };
             } catch (e) {
-                searchPath = await this.discoverSearchPath();
-                const auth = await this.fetchAuth(searchPath);
-                await this._saveBootstrap(searchPath, auth);
-                return { searchPath, auth };
+                // 逐一尝试回退端点
+                for (const fallback of this.FALLBACK_PATHS) {
+                    if (fallback === searchPath) continue;
+                    try {
+                        const auth = await this.fetchAuth(fallback);
+                        await this._saveBootstrap(fallback, auth);
+                        return { searchPath: fallback, auth };
+                    } catch (e2) { /* 继续下一个 */ }
+                }
+                throw e;
             }
         },
 
@@ -890,7 +901,11 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         },
 
         _pickResults(json) {
-            return Array.isArray(json && json.data) ? json.data : [];
+            if (!json) return [];
+            if (Array.isArray(json.data)) return json.data;
+            if (Array.isArray(json.results)) return json.results;
+            if (Array.isArray(json)) return json;
+            return [];
         },
 
         async search(title, options = {}) {
@@ -964,11 +979,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                 curr[0] = i;
                 for (let j = 1; j <= b.length; j++) {
                     const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-                    curr[j] = Math.min(
-                        curr[j - 1] + 1,
-                        prev[j] + 1,
-                        prev[j - 1] + cost
-                    );
+                    curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
                 }
                 [prev, curr] = [curr, prev];
             }
@@ -1080,50 +1091,14 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                     flex-wrap: wrap;
                 }
                 .hltb-card.is-error { opacity: 0.85; }
-                .hltb-brand {
-                    display: flex;
-                    align-items: baseline;
-                    gap: 8px;
-                    flex: 0 0 auto;
-                }
-                .hltb-title {
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: #ffffff;
-                    letter-spacing: 0.2px;
-                    white-space: nowrap;
-                }
-                .hltb-stats {
-                    display: flex;
-                    align-items: baseline;
-                    gap: 18px;
-                    flex: 1 1 auto;
-                    flex-wrap: wrap;
-                }
-                .hltb-stat {
-                    display: flex;
-                    align-items: baseline;
-                    gap: 6px;
-                    white-space: nowrap;
-                }
-                .hltb-stat-label {
-                    font-size: 11px;
-                    color: #8f98a0;
-                    text-transform: uppercase;
-                    letter-spacing: 0.4px;
-                }
-                .hltb-stat-value {
-                    font-size: 14px;
-                    font-weight: 600;
-                    color: #ffffff;
-                }
+                .hltb-brand { display: flex; align-items: baseline; gap: 8px; flex: 0 0 auto; }
+                .hltb-title { font-size: 13px; font-weight: 600; color: #ffffff; letter-spacing: 0.2px; white-space: nowrap; }
+                .hltb-stats { display: flex; align-items: baseline; gap: 18px; flex: 1 1 auto; flex-wrap: wrap; }
+                .hltb-stat { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+                .hltb-stat-label { font-size: 11px; color: #8f98a0; text-transform: uppercase; letter-spacing: 0.4px; }
+                .hltb-stat-value { font-size: 14px; font-weight: 600; color: #ffffff; }
                 .hltb-stat-value[data-slot="main"] { color: #ffcc00 !important; }
-                .hltb-status {
-                    font-size: 12px;
-                    color: #8f98a0;
-                    flex: 1 1 auto;
-                    min-width: 80px;
-                }
+                .hltb-status { font-size: 12px; color: #8f98a0; flex: 1 1 auto; min-width: 80px; }
                 .hltb-cta, .hltb-clear {
                     display: inline-block;
                     border-radius: 2px;
@@ -1161,13 +1136,8 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                     width: 140px;
                     flex: 0 0 auto;
                 }
-                .hltb-search-input:focus {
-                    outline: none;
-                    border-color: #67c1f5;
-                }
-                .hltb-search-input.visible {
-                    display: inline-block;
-                }
+                .hltb-search-input:focus { outline: none; border-color: #67c1f5; }
+                .hltb-search-input.visible { display: inline-block; }
             </style>
             <div class="hltb-card" part="card">
                 <div class="hltb-brand">
@@ -1226,9 +1196,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         });
 
         clearBtn.addEventListener('click', () => {
-            if (onClearCallback) {
-                onClearCallback();
-            }
+            if (onClearCallback) onClearCallback();
         });
 
         function setInputVisible(visible) {
@@ -1417,6 +1385,8 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
 
         async function clearCacheAndRefresh() {
             await HltbCache.removeGame(appid);
+            // 同时清除端点缓存，强制重新发现
+            GM_deleteValue('hltb_endpoint');
             panel.reset(target.title);
             const response = await lookup(target.appid, target.title, {
                 isDlc: target.isDlc,
@@ -1454,7 +1424,6 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         main();
     }
 })();
-
 // ========== 4. PY查价助手（原脚本4） ==========
 (function() {
     'use strict';
