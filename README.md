@@ -2,16 +2,16 @@
 
 ## 一键安装
 
-### 脚本一：Tampermonkey 整合功能 (Tampermonkey 完整版)
+### 脚本一：Tampermonkey 整合功能（Tampermonkey 完整版）
 
-[![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
+[![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![下载脚本一](https://img.shields.io/badge/Download-Script%201-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
-### 脚本二：Steam++ 整合功能 (Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用)
+### 脚本二：Steam++ 整合功能（建议在 Steam++ 上用）
 
-[![安装脚本二](https://img.shields.io/badge/Install-Script%202-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
+[![安装脚本二](https://img.shields.io/badge/Install-Script%202-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![下载脚本二](https://img.shields.io/badge/Download-Script%202-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
-> 点击上方，脚本管理器会自动弹出安装确认框，点击“安装”即可(Tampermonkey 或 Violentmonkey)。
-
+> 点击 **Install** 按钮，脚本管理器会自动弹出安装确认框。
+> 点击 **Download** 按钮，会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件。
 A userscript (Tampermonkey / Violentmonkey) that adds various quality‑of‑life improvements for the Steam web store and community pages.
 
 ---
