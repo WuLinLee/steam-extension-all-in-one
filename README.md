@@ -1,14 +1,36 @@
 # Steam‑Extension‑All‑in‑One
 
+> **维护分支说明：** `new` 是经过修复与整理的更新分支；`main` 保留原有旧版，不会被本次更新覆盖。当前安装按钮指向 `new` 分支。
+
+## 更新版（`new` 分支）
+
+- 脚本一版本：`1.5`；脚本二版本：`2.2`。
+- 为愿望单史低请求增加有限重试与失败状态处理；切换地区时忽略旧地区请求的过期结果。
+- 修复进包数据尚未加载完成时卡片被提前标记为已扫描、导致标签漏显示的问题。
+- HLTB 模糊匹配增加相似度门槛，降低把其他游戏的时长误显示过来的概率。
+- SteamPy 返回的游戏名称与史低信息改用安全的 DOM 文本节点 / HTML 转义，外链增加 `noopener noreferrer`。
+- 两份脚本仍保留同名文件；请**只启用其中一份**，不要在 Tampermonkey 和 Steam++ 中同时开启同类脚本。
+
+> 说明：本次完成源码修改和静态语法检查；尚未在所有 Steam 页面、所有 Steam++ 版本和各种网络环境中进行完整运行测试。
+
+## 社区已有方案参考（避免重复造轮子）
+
+- [Augmented Steam（GitHub）](https://github.com/IsThereAnyDeal/AugmentedSteam)：成熟的 Steam 浏览器扩展，具备历史低价与价格信息等功能；如果只需要商店增强，建议优先评估官方项目，而不是长期维护重复实现。项目采用 GPL-3.0。
+- [Steam - Intigrate HowLongToBeat（Greasy Fork）](https://greasyfork.org/en/scripts/451899-steam-intigrate-howlongtobeat)：独立 HLTB 用户脚本，页面列出的版本为 1.35、许可证 MIT、最近更新于 2026-08-24。它主要提供主线时长按钮，和本仓库较完整的四类时长面板并非完全相同的功能。
+- [Greasy Fork 的 Steam 脚本目录（按更新时间）](https://greasyfork.org/en/scripts/by-site/steampowered.com?sort=updated)：可继续查找愿望单侧边栏、进包次数、史低及其他 Steam 辅助脚本；安装前应核对更新时间、脚本权限、数据来源和许可证。
+
+> 本仓库是衍生整合项目，第三方代码的来源和再分发授权并未全部核实，**不要把本仓库整体当作拥有统一开源许可证的项目**。参考或采用第三方代码前，请遵循原项目的许可证与署名要求。
+
+
 ## 一键安装
 
 ### 脚本一：Tampermonkey 整合功能（Tampermonkey 完整版 steam++上 HLTB有问题）
 
-[![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![下载脚本一](https://img.shields.io/badge/Download-Script%201-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
+[![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/new/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![下载脚本一](https://img.shields.io/badge/Download-Script%201-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/new/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
 ### 脚本二：Steam++ 整合功能（Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用）
 
-[![安装脚本二](https://img.shields.io/badge/Install-Script%202-lightgrey?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![下载脚本二](https://img.shields.io/badge/Download-Script%202-blue?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
+[![安装脚本二](https://img.shields.io/badge/Install-Script%202-lightgrey?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/new/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![下载脚本二](https://img.shields.io/badge/Download-Script%202-blue?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/new/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
 > **点击 **INSTALL** 按钮，脚本管理器会自动弹出安装确认框。**（前提是你安装了 Tampermonkey/篡改猴/油猴 同一个东西）（另一种安装方式是打开 GitHub 文件页点 Raw）
 
