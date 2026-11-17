@@ -6,17 +6,33 @@
 
 ## 一键安装
 
-### 脚本一：Tampermonkey 完整版
+### 脚本一：Tampermonkey 整合功能（Tampermonkey 完整版 steam++上 HLTB有问题）
 
-包含完整的 HLTB 通关时长查询面板，适合使用 Tampermonkey、Violentmonkey 等用户脚本管理器。
+[![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![下载脚本一](https://img.shields.io/badge/Download-Script%201-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
-[![安装脚本一](https://img.shields.io/badge/安装-Tampermonkey%20脚本一-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![查看脚本一](https://img.shields.io/badge/GitHub-查看脚本一源码-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
+### 脚本二：Steam++ 整合功能（Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用）
 
-### 脚本二：Steam++ / Watt Toolkit 版
+[![安装脚本二](https://img.shields.io/badge/Install-Script%202-lightgrey?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![下载脚本二](https://img.shields.io/badge/Download-Script%202-blue?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
-更适合导入 Steam++（Watt Toolkit）的脚本配置。它提供 HLTB 和 SteamDB 快捷跳转按钮，但**没有脚本一那种自动查询并显示四类通关时长的 HLTB 面板**。脚本二也可以由 Tampermonkey 等用户脚本管理器运行。
+> **点击 **INSTALL** 按钮，脚本管理器会自动弹出安装确认框。**（前提是你安装了 Tampermonkey/篡改猴/油猴 同一个东西）（另一种安装方式是打开 GitHub 文件页点 Raw）
 
-[![打开脚本二 Raw 文件](https://img.shields.io/badge/打开-Raw%20脚本二-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![查看脚本二](https://img.shields.io/badge/GitHub-查看脚本二源码-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
+> **点击 **DOWNLOAD** 按钮，会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件。**
+
+> **不要在steam++和油猴上都开启脚本，两个脚本有很多地方是重复的不需要重复开启脚本，总之只保留一个脚本一处开启就对了**
+
+### Tampermonkey/篡改猴/油猴 安装操作顺序
+
+> **Edge → 右上角三个点 … → 扩展 → 获取 Microsoft Edge 扩展 → 搜索 Tampermonkey 或者 篡改猴 → 点第一个 → 添加扩展 → 完成 → 点击这个页面的 **INSTALL** 按钮，脚本管理器会自动弹出安装确认框，点安装**
+
+### **Steam++**（瓦特工具箱）导入脚本二操作顺序 [Steam++官网](https://steampp.net/)
+
+> **点上面蓝色的Steam++官网下载安装 Steam++**
+
+> **点击上方蓝色的 DOWNLOAD SCRIPT2 按钮（建议下载脚本二）会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件，下载警告点保留**
+
+> **打开Steam++/Watt Toolkit** → **网络加速 → 加速设置 → 打开 “启用脚本”**
+
+> **打开Steam++/Watt Toolkit** → **网络加速 → 脚本配置 → +导入 → 选中下载的.js脚本 点打开 → 添加成功 → 网络加速 → 一键加速 操作之后只需要一键加速就行**
 
 ## 两个版本的功能区别
 
@@ -35,28 +51,6 @@
 
 - 想在 Steam 游戏页面直接看到主线、主线＋支线、完美通关和所有方式的平均时长，选**脚本一**。
 - 想在 Steam++ 中使用整合功能，并通过按钮跳转到 HLTB、SteamDB 查询，选**脚本二**。
-
-## 安装说明
-
-### 方式一：使用 Tampermonkey（脚本一或脚本二）
-
-1. 在浏览器安装 [Tampermonkey（篡改猴）](https://www.tampermonkey.net/)。
-2. 根据需要点击上方对应脚本的 **安装** / **Raw** 链接。
-3. 浏览器会打开用户脚本管理器的安装页面。
-4. 检查脚本信息后，点击安装即可。
-
-Edge 用户可以在 Edge 扩展商店搜索 Tampermonkey，添加扩展后再点击本仓库的脚本安装链接。
-
-### 方式二：导入 Steam++ / Watt Toolkit（建议使用脚本二）
-
-1. 从 [Steam++ / Watt Toolkit 官网](https://steampp.net/) 下载并安装软件。
-2. 打开上方**脚本二**的 GitHub 文件页，点击右上角下载按钮，下载 `.user.js` 文件。
-3. 打开 Steam++ / Watt Toolkit。
-4. 进入 **网络加速 → 加速设置**，启用 **启用脚本**。
-5. 进入 **网络加速 → 脚本配置**，点击 **+ 导入**，选择刚才下载的脚本文件。
-6. 导入成功后，按平时的方式使用网络加速即可。
-
-> Steam++ 的不同版本界面名称可能略有差异；找不到对应选项时，请以当前版本的脚本配置页面为准。
 
 ## 功能介绍
 
