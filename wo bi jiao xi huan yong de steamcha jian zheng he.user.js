@@ -745,26 +745,20 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         },
 
         _extractSearchPathFromScript(scriptText) {
-            // 兼容新旧多种模式的端点提取
-            const patterns = [
-                /["'`](\/api\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)\/init\b/g,
-                /["'`](\/api\/[a-zA-Z0-9_-]+)\/init\b/g,
-                /fetch\s*\(\s*["'`](\/api\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*)["'`]/gi,
-                /["'`](\/api\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*)["'`]/g,
-            ];
-            for (const re of patterns) {
-                let m;
-                while ((m = re.exec(scriptText)) !== null) {
-                    const path = m[1];
-                    if (!path || path === '/api' || path.length < 6) continue;
-                    // 排除明显的静态资源路径
-                    if (/\.(js|css|png|jpg|svg|woff|ico)$/i.test(path)) continue;
-                    return path;
-                }
+            // 只从包含 HLTB 搜索请求结构的脚本中提取接口，避免误把其他 /api 路径当成搜索接口。
+            if (!scriptText.includes('searchTerms') || !scriptText.includes('searchOptions')) return null;
+            const initPattern = /["'`]\/api\/((?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+)\/init\b/g;
+            let match;
+            while ((match = initPattern.exec(scriptText)) !== null) {
+                if (match[1]) return '/api/' + match[1];
+            }
+            const postPattern = /fetch\s*\(\s*["'`](\/api\/[a-zA-Z0-9_/-]+)[^"'`]*["'`]\s*,\s*\{[^}]*method:\s*["'`]POST["'`]/gi;
+            while ((match = postPattern.exec(scriptText)) !== null) {
+                const candidate = match[1].replace(/\/+$/, '');
+                if (candidate && candidate !== '/api') return candidate;
             }
             return null;
         },
-
         async discoverSearchPath() {
             try {
                 const html = await this._fetchText(this.HOMEPAGE_URL);
@@ -984,31 +978,41 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             }
             return prev[b.length];
         },
-        match(results, appid, title) {
+        getYear(entry) {
+            for (const value of [entry && entry.release_world, entry && entry.game_name_date]) {
+                const match = String(value || '').match(/\b(19|20)\d{2}\b/);
+                if (match) return Number(match[0]);
+            }
+            return null;
+        },
+        match(results, appid, title, year = null) {
             if (!Array.isArray(results) || !results.length) return null;
             const byAppid = results.find(r => r && r.profile_steam && String(r.profile_steam) === String(appid));
             if (byAppid) return { entry: byAppid, matchType: 'appid' };
             const wanted = this.normalize(title);
             if (!wanted) return null;
-            const exact = results.find(r => r && this.normalize(r.game_name) === wanted);
-            if (exact) return { entry: exact, matchType: 'exact' };
+            const hasYear = Number.isInteger(year) && year >= 1900 && year <= 2100;
             let best = null;
             for (const entry of results) {
                 if (!entry || !entry.game_name) continue;
                 const candidate = this.normalize(entry.game_name);
                 if (!candidate) continue;
                 const distance = this.levenshtein(wanted, candidate);
+                const entryYear = hasYear ? this.getYear(entry) : null;
+                const delta = entryYear === null ? null : Math.abs(entryYear - year);
+                const yearScore = delta === 0 ? 2 : delta === 1 ? 1 : 0;
                 const popularity = Number(entry.comp_all_count) || 0;
                 if (!best || distance < best.distance ||
-                    (distance === best.distance && popularity > best.popularity)) {
-                    best = { entry, distance, popularity };
+                    (distance === best.distance && (yearScore > best.yearScore ||
+                    (yearScore === best.yearScore && popularity > best.popularity)))) {
+                    best = { entry, distance, yearScore, popularity };
                 }
             }
             if (!best) return null;
-            // 不再无条件返回“最接近”的结果，防止把完全不同的游戏错误匹配。
             const maxDistance = Math.max(2, Math.floor(wanted.length * 0.18));
             if (best.distance > maxDistance) return null;
-            return { entry: best.entry, matchType: 'fuzzy', distance: best.distance };
+            const matchType = best.distance === 0 ? (best.yearScore === 2 ? 'year' : 'exact') : 'fuzzy';
+            return { entry: best.entry, matchType, distance: best.distance };
         }
     };
     function getAppId() {
@@ -1040,9 +1044,12 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             const full = data.fullgame && data.fullgame.appid && data.fullgame.name
                 ? { appid: String(data.fullgame.appid), name: String(data.fullgame.name).trim() }
                 : null;
+            const releaseDate = data.release_date && data.release_date.date ? String(data.release_date.date) : '';
+            const yearMatch = releaseDate.match(/\b(19|20)\d{2}\b/);
             return {
                 name: data.name ? String(data.name).trim() : null,
                 type: data.type ? String(data.type) : null,
+                year: yearMatch ? Number(yearMatch[0]) : null,
                 fullgame: full && full.name ? full : null,
             };
         } catch (e) {
@@ -1057,6 +1064,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             appid,
             title: (details && details.name) || localizedTitle,
             isDlc,
+            year: details ? details.year : null,
             fallback: isDlc && details.fullgame
                 ? { appid: details.fullgame.appid, title: details.fullgame.name }
                 : null,
@@ -1328,7 +1336,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             return { ok: false, error: 'network' };
         }
 
-        const matched = HltbMatcher.match(results, appid, title);
+        const matched = HltbMatcher.match(results, appid, title, opts.year || null);
         if (!matched) {
             if (fallback && fallback.appid && fallback.title) {
                 const base = await lookup(String(fallback.appid), String(fallback.title));
@@ -1371,6 +1379,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             const response = await lookup(target.appid, titleToSearch, {
                 isDlc: target.isDlc,
                 fallback: target.fallback,
+                year: target.year,
             });
             if (response && response.ok) {
                 panel.showData(response.data);
@@ -1390,6 +1399,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             const response = await lookup(target.appid, target.title, {
                 isDlc: target.isDlc,
                 fallback: target.fallback,
+                year: target.year,
             });
             if (response && response.ok) {
                 panel.showData(response.data);
