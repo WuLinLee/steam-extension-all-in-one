@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
-// @version      2.6
+// @version      2.7
 // @description  steam++
 // @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -113,7 +113,7 @@ steam-extension-all-in-one */
         button.className = 'shc-refresh';
         button.title = '刷新中国区史低价格';
         button.setAttribute('aria-label', '刷新中国区史低价格');
-        button.innerHTML = '<img src="https://cdn.fastly.steamstatic.com/store/labs/diving_bell/refresh.svg" alt="">';
+        button.innerHTML = '<span class="shc-refresh-icon" aria-hidden="true"></span>';
         button.addEventListener('click', refreshWishlistPrices);
         return button;
     }
@@ -316,8 +316,8 @@ steam-extension-all-in-one */
     }
     GM_addStyle(`
         .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; background:transparent; border:0; border-radius:4px; cursor:pointer; }
-        .shc-refresh:hover { background:rgba(102,192,244,.15); }
-        .shc-refresh img { display:block; width:18px; height:18px; }
+.shc-refresh:hover { background:rgba(143,152,160,.10); }
+.shc-refresh-icon { display:block; width:18px; height:18px; background:#8f98a0; -webkit-mask:url("https://cdn.fastly.steamstatic.com/store/labs/diving_bell/refresh.svg") center / contain no-repeat; mask:url("https://cdn.fastly.steamstatic.com/store/labs/diving_bell/refresh.svg") center / contain no-repeat; }
         .game_lowest_price { word-break: keep-all; }
     `);
     initWishlist();
