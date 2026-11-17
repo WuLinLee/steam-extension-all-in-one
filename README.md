@@ -33,6 +33,15 @@
 
 
 ---
+源代码：
+https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8
+
+ https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable
+
+ https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap
+
+ https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok
+---
 A userscript (Tampermonkey / Violentmonkey) that adds various quality‑of‑life improvements for the Steam web store and community pages.
 ## ⚠️ Important Notice, Copyright & Disclaimer
 > **This is a remixed, derivative work, NOT fully original code.**
@@ -192,10 +201,4 @@ Steam 官方商店的价格不一定是最便宜的。SteamPy 是一个国内的
 四个脚本各有分工，**互不打架**，装在一起就是一套完整的 Steam 购物决策辅助系统。看完价格看时长，看完时长看渠道，全方面帮你省钱省时间。😊
 
 
-https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8
 
- https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable
-
- https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap
-
- https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok
