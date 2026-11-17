@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
-// @version      1.9
+// @version      1.10
 // @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -189,7 +189,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         button.className = 'shc-refresh';
         button.title = '刷新中国区史低价格';
         button.setAttribute('aria-label', '刷新中国区史低价格');
-        button.innerHTML = '<img src="https://cdn.fastly.steamstatic.com/store/labs/diving_bell/refresh.svg" alt="">';
+        button.innerHTML = '<span class="shc-refresh-icon" aria-hidden="true"></span>';
         button.addEventListener('click', refreshWishlistPrices);
         return button;
     }
@@ -410,8 +410,8 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
 
     GM_addStyle(`
         .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; background:transparent; border:0; border-radius:4px; cursor:pointer; }
-        .shc-refresh:hover { background:rgba(102,192,244,.15); }
-        .shc-refresh img { display:block; width:18px; height:18px; }
+.shc-refresh:hover { background:rgba(143,152,160,.10); }
+.shc-refresh-icon { display:block; width:18px; height:18px; background:#8f98a0; -webkit-mask:url("https://cdn.fastly.steamstatic.com/store/labs/diving_bell/refresh.svg") center / contain no-repeat; mask:url("https://cdn.fastly.steamstatic.com/store/labs/diving_bell/refresh.svg") center / contain no-repeat; }
         .game_lowest_price { word-break: keep-all; }
     `);
 
