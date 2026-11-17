@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
-// @version      1.8
+// @version      1.9
 // @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -175,7 +175,9 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                         catch (e) { reject(new Error('JSON 解析失败')); }
                     } else reject(new Error(`HTTP ${response.status}`));
                 },
-                onerror: () => reject(new Error('网络错误'))
+                onerror: () => reject(new Error('网络错误')),
+                ontimeout: () => reject(new Error('请求超时')),
+                timeout: 15000
             });
         });
     }
@@ -187,7 +189,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         button.className = 'shc-refresh';
         button.title = '刷新中国区史低价格';
         button.setAttribute('aria-label', '刷新中国区史低价格');
-        button.textContent = '↻';
+        button.innerHTML = '<img src="https://cdn.fastly.steamstatic.com/store/labs/diving_bell/refresh.svg" alt="">';
         button.addEventListener('click', refreshWishlistPrices);
         return button;
     }
@@ -196,10 +198,11 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         const lowest = info.lowest;
         const dateStr = new Date(lowest.timestamp).toLocaleDateString();
         const lowPriceStr = formatPrice(lowest.price.amount, lowest.price.currency);
+        const discount = lowest.cut ? '-' + lowest.cut + '%' : '';
         const div = document.createElement('div');
         div.className = 'game_lowest_price';
         div.innerHTML = `
-            史低 <span style="font-size:14px; color:#acf;">${lowPriceStr}</span> -${lowest.cut}% <span style="font-size:14px; color:#acf;">(${dateStr})</span>
+            史低 <span style="font-size:14px; color:#acf;">${lowPriceStr}</span> ${discount} <span style="font-size:14px; color:#acf;">(${dateStr})</span>
         `;
         return div;
     }
@@ -406,8 +409,9 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     }
 
     GM_addStyle(`
-        .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; color:#c6d4df; background:transparent; border:0; cursor:pointer; font-family:'Segoe UI Symbol',sans-serif; font-size:24px; line-height:1; }
-        .shc-refresh:hover { color:#fff; }
+        .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; background:transparent; border:0; border-radius:4px; cursor:pointer; }
+        .shc-refresh:hover { background:rgba(102,192,244,.15); }
+        .shc-refresh img { display:block; width:18px; height:18px; }
         .game_lowest_price { word-break: keep-all; }
     `);
 
@@ -1453,6 +1457,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         const firstResponse = await lookup(target.appid, target.title, {
             isDlc: target.isDlc,
             fallback: target.fallback,
+            year: target.year,
         });
         if (firstResponse && firstResponse.ok) {
             panel.showData(firstResponse.data);
@@ -1503,6 +1508,11 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             method: 'GET',
             url: url,
             onload: function(response) {
+                if (response.status < 200 || response.status >= 300) {
+                    console.warn('[Cortana] HTTP ' + response.status);
+                    callback(null);
+                    return;
+                }
                 try {
                     const data = JSON.parse(response.responseText);
                     callback(data);
@@ -1533,9 +1543,9 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             const gameData = data[appId].data;
             const subIds = [];
             const subNames = {};
-            if (gameData.package_groups) {
+            if (Array.isArray(gameData.package_groups)) {
                 gameData.package_groups.forEach(group => {
-                    (group.subs || []).forEach(sub => {
+                    (Array.isArray(group.subs) ? group.subs : []).forEach(sub => {
                         if (!sub) return;
                         if (sub.can_get_free_license === '0' || sub.price_in_cents_with_discount > 0) {
                             subIds.push(sub.packageid);
@@ -1604,6 +1614,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         }
 
         let valid = results.filter(item => {
+            if (!item) return false;
             const dai = Number(item.daiPrice) || 0;
             const key = Number(item.keyPrice) || 0;
             return dai > 0 || key > 0;
@@ -1614,11 +1625,11 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         }
 
         const item = valid[0];
-        let displayName = item.versionName || item.gameName || "版本";
+        let displayName = String(item.versionName || item.gameName || "版本");
         displayName = displayName.replace(/[¥$€£]\s*[\d,]+(\.\d{1,2})?/g, '').trim();
         if (!displayName) displayName = "版本";
         displayName = escapeHTML(displayName);
-        const gameId = encodeURIComponent(String(item.id || ''));
+        const gameId = encodeURIComponent(String(item.id || item.gameId || ''));
 
         const dai = Number(item.daiPrice) || 0;
         const key = Number(item.keyPrice) || 0;
@@ -1626,14 +1637,16 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         let html = `<div class="cortana-price-box cortana-simple" style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px;">`;
         html += `<span style="font-weight:bold; color:#66c0f4; font-size:13px;">${displayName}</span>`;
         html += `<div style="display:flex; gap:8px;">`;
-        if (dai > 0) {
+        if (dai > 0 && gameId) {
             html += `<a href="https://steampy.com/hotGameDetail?gameId=${gameId}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">代购购买</a>`;
         }
-        if (key > 0) {
+        if (key > 0 && gameId) {
             html += `<a href="https://steampy.com/cdkDetail?name=cn&gameId=${gameId}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">CDK购买</a>`;
         }
         if (dai === 0 && key === 0) {
             html += `<span style="color:#888;">无购买选项</span>`;
+        } else if (!gameId) {
+            html += `<span style="color:#888;">无有效购买链接</span>`;
         }
         html += `</div></div>`;
         return html;
@@ -1641,29 +1654,27 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
 
     function handleStorePage() {
         if (!location.pathname.includes('/app/')) return;
-        const appId = location.pathname.match(/\/app\/(\d+)/)?.[1];
+        const appId = /\/app\/(\d+)/.exec(location.pathname)?.[1];
         if (!appId) return;
 
         document.querySelectorAll('form[name^="add_to_cart_"]').forEach(form => {
             if (form.dataset.cortana) return;
-            form.dataset.cortana = "true";
             const input = form.querySelector('input[name="subid"], input[name="bundleid"]');
-            if (input) {
-                const url = `${API_PY_STORE}?subId=${input.value}&appId=${appId}&type=${input.name}`;
-                proxyRequest(url, (data) => {
-                    if (data && data.success) {
-                        const div = document.createElement('div');
-                        const item = data.result;
-                        item.versionName = "当前选择版本";
-                        div.innerHTML = generateHTML([item]);
-                        const box = div.firstElementChild;
-                        if (box) form.parentElement.appendChild(box);
-                    }
-                });
-            }
+            if (!input) return;
+            form.dataset.cortana = "true";
+            const url = API_PY_STORE + '?subId=' + encodeURIComponent(input.value) + '&appId=' + appId + '&type=' + encodeURIComponent(input.name);
+            proxyRequest(url, (data) => {
+                if (data && data.success && data.result && typeof data.result === 'object') {
+                    const div = document.createElement('div');
+                    const item = data.result;
+                    item.versionName = "当前选择版本";
+                    div.innerHTML = generateHTML([item]);
+                    const box = div.firstElementChild;
+                    if (box && form.parentElement) form.parentElement.appendChild(box);
+                }
+            });
         });
     }
-
     function handleWishlistPage() {
         if (!location.pathname.includes('/wishlist/')) return;
         const rows = document.querySelectorAll('div[data-index]');
