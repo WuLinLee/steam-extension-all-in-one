@@ -102,14 +102,14 @@
 | :--- | :--- | :--- |
 | 愿望单史低查询、地区选择 | [Steam 史低自动查询（GreasyFork）](https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8) · [代码页](https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8/code) | 代码结构和史低查询请求逻辑有明确对应；本仓库对界面、缓存和页面适配作了调整。 |
 | 游戏进包次数标记 | [Steam Family Game Analysis（GreasyFork）](https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable) · [代码页](https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable/code) | 对应其 Barter.vg Bundle 数据读取、缓存和游戏卡片标记模块；本仓库只整合了进包标记相关功能。 |
-| HLTB 通关时长 | [HLTB for Steam（Chrome Web Store）](https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap) | 功能参考来源。商店页面不是可直接核对的完整源代码链接，因此不将其描述为已逐行确认的代码来源。 |
-| SteamPy 查价 | [PY查价助手（Chrome Web Store）](https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok) | 功能参考来源。商店页面不是可直接核对的完整源代码链接；本仓库的请求地址和页面处理逻辑可在脚本中查看。 |
+| HLTB 通关时长 | [HLTB for Steam（Chrome Web Store）](https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap) · [解包源码（back/1.1.8_0）](https://github.com/WuLinLee/back/tree/main/1.1.8_0) · [content.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/content.js) · [background.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/background.js) · [HLTB 客户端](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/hltb-client.js) · [匹配器](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/matcher.js) · [缓存](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/cache.js) | 对照的是 Chrome 扩展 1.1.8 解包文件。整合脚本一使用了对应的 HLTB 查询、端点发现/认证、缓存和游戏匹配逻辑，并改成用户脚本环境运行；页面面板和部分处理流程也经过整合调整。 |
+| SteamPy 查价 | [PY查价助手（Chrome Web Store）](https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok) · [解包源码（back/1.0_0）](https://github.com/WuLinLee/back/tree/main/1.0_0) · [content.js](https://github.com/WuLinLee/back/blob/main/1.0_0/content.js) · [background.js](https://github.com/WuLinLee/back/blob/main/1.0_0/background.js) | 对照的是 PY查价助手 1.0 解包文件。整合脚本中的 API 地址、Steam 套餐读取、按套餐 ID/游戏名查询和愿望单查价流程，与该版本 content.js 有直接代码对应；请求代理则改为使用用户脚本的 GM_xmlhttpRequest。 |
 
 ### 许可证与使用说明
 
 - 本仓库没有声明一个覆盖所有文件的统一许可证。不同功能模块可能包含来自上游项目的代码或衍生实现，应分别遵守相应上游项目的许可证及署名要求。
 - 上述两个 GreasyFork 项目页面标注了 GPL 系列许可证。涉及这些项目代码的部分，不能仅凭本仓库自己的说明就取消或替换上游许可证要求。
-- 两个 Chrome 扩展的商店介绍页不能代替其完整源代码和许可证文件。若要重新发布、再分发或用于其他项目，应先核对相应作者的授权条款。
+- HLTB 和 PY查价的解包源码已整理在 [WuLinLee/back](https://github.com/WuLinLee/back)：HLTB 为 `1.1.8_0`，PY查价为 `1.0_0`。该仓库目前未见这两个扩展对应的 LICENSE 文件；找到源码不等于取得再分发授权，因此仍不能据此推定它们采用 GPL、MIT 或其他许可证。若要公开再分发或用于其他项目，应先核对扩展作者的授权条款或取得许可。
 - 本仓库目前主要用于个人使用、学习和功能整合参考。**不要将整个仓库误认为已经获得统一的 MIT、GPL 或其他开源授权，也不要在未核实各部分授权前重新打包或分发。**
 - 脚本按现状提供，不保证持续兼容 Steam 页面、第三方接口或 Steam 平台规则。使用者应自行判断第三方购买链接、地区价格和账号操作风险。
 
