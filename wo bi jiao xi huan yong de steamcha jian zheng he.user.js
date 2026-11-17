@@ -239,10 +239,10 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     }
 
     function checkAndRequestNew() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         const neededApp = [], neededSub = [], neededBundle = [];
         rows.forEach(row => {
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -279,11 +279,11 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     }
 
     async function fetchAndUpdateWishlist() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         if (rows.length === 0) return;
         const appIds = [], subIds = [], bundleIds = [];
         rows.forEach(row => {
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -322,9 +322,9 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     }
 
     function updateVisibleRows() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         rows.forEach(row => {
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -358,10 +358,10 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     }
 
     function restoreMissingFromCache() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         rows.forEach(row => {
             if (row.querySelector('.game_lowest_price')) return;
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -613,7 +613,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             }
             if (needScan) scheduleScan();
         });
-        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
+        observer.observe(document.body, { childList: true, subtree: true });
     }
 
     if (document.readyState === 'loading') {
@@ -1343,7 +1343,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                 const el = findAnchor();
                 if (el) finish(el);
             });
-            observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
+            observer.observe(document.body, { childList: true, subtree: true });
             const timer = setTimeout(() => finish(null), 3000);
         });
     }
