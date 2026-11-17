@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
-// @version      2.4
+// @version      2.5
 // @description  steam++
 // @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -111,7 +111,7 @@ steam-extension-all-in-one */
         button.className = 'shc-refresh';
         button.title = '刷新中国区史低价格';
         button.setAttribute('aria-label', '刷新中国区史低价格');
-        button.innerHTML = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18.5 6L20 12M4 12l1.5 6A7 7 0 0 0 18.4 15"/></svg>';
+        button.textContent = '↻';
         button.addEventListener('click', refreshWishlistPrices);
         return button;
     }
@@ -312,7 +312,7 @@ steam-extension-all-in-one */
         return div;
     }
     GM_addStyle(`
-        .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; color:#c6d4df; background:transparent; border:0; cursor:pointer; }
+        .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; color:#c6d4df; background:transparent; border:0; cursor:pointer; font-family:'Segoe UI Symbol',sans-serif; font-size:24px; line-height:1; }
         .shc-refresh:hover { color:#fff; }
         .game_lowest_price { word-break: keep-all; }
     `);
