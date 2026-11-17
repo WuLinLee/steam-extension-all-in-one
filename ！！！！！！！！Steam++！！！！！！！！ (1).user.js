@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
-// @version      2.7
+// @version      2.8
 // @description  steam++
 // @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -385,7 +385,12 @@ steam-extension-all-in-one */
         if (ds) return ds.split(',')[0].trim();
         var dai = node.getAttribute('data-app-id');
         if (dai) return dai.split(',')[0].trim();
+
         var href = node.href || node.getAttribute('href') || '';
+        if (!/\/app\/\d+/.test(href) && node.querySelector) {
+            var appLink = node.querySelector('a[href*="/app/"]');
+            if (appLink) href = appLink.href || appLink.getAttribute('href') || '';
+        }
         var m = /\/app\/(\d+)/.exec(href);
         return m ? m[1] : null;
     }
@@ -414,6 +419,20 @@ steam-extension-all-in-one */
             background: #f59e0b;
             color: #fff;
             z-index: 10;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .fa-bundle-inline-flag {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: #f59e0b;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1.4;
+            vertical-align: middle;
             white-space: nowrap;
             pointer-events: none;
         }
@@ -466,19 +485,57 @@ steam-extension-all-in-one */
         }
     }
 
+    function addBundleItemFlags() {
+        // 详情页 Bundle 内的游戏是文字项目，不是普通封面卡片；只在 Bundle 区域追加行内标签。
+        document.querySelectorAll('.dynamic_bundle_description a[href*="/app/"]').forEach(function(link) {
+            var appid = getAppIdFromNode(link);
+            if (!appid) return;
+            var count = getBundleCount(appid);
+            if (!count) return;
+
+            var flag = link.nextElementSibling;
+            if (!flag || !flag.classList.contains('fa-bundle-inline-flag')) {
+                flag = document.createElement('span');
+                flag.className = 'fa-bundle-inline-flag';
+                link.insertAdjacentElement('afterend', flag);
+            }
+            flag.textContent = '进过' + count + '包';
+            flag.title = '此游戏曾出现在 ' + count + ' 个 bundle 中（数据来源: Barter.vg）';
+        });
+    }
+
+    // 只扫描 Steam 明确的游戏卡片类型，避免把点数商店物品和新闻链接误判为游戏卡片。
     var CARD_SELECTOR = [
-        '[data-ds-appid]',
-        'a[href*="/app/"]'
+        'a.store_capsule',
+        'a.store_main_capsule',
+        'a.similar_grid_capsule',
+        'a.tab_item',
+        'a.search_result_row',
+        'a.match',
+        '.bundle_package_item',
+        '.wishlist_row'
     ].join(',');
+
     function scanCards() {
         addDetailBundleFlag();
+        addBundleItemFlags();
+
         document.querySelectorAll(CARD_SELECTOR).forEach(function(el) {
+            if (el.closest && el.closest('.dynamic_bundle_description, .game_area_points_shop, #game_area_points_shop, .home_marketing_message, .game_area_news, #game_area_news')) return;
             if (el.tagName === 'A' && !el.querySelector('img')) return;
-            // 数据晚于卡片加载时，后续扫描仍会尝试补上标记。
             addBundleFlag(el);
             if (el.querySelector('.fa-bundle-flag')) el.dataset.faBundleScanned = '1';
         });
+
+        // Steam 新版愿望单使用 data-index 行容器；只处理其游戏行，不扫描整页通用 data-ds-appid。
+        if (location.pathname.includes('/wishlist/')) {
+            document.querySelectorAll('div[data-index]').forEach(function(row) {
+                if (row.closest && row.closest('.game_area_points_shop, #game_area_points_shop, .game_area_news, #game_area_news')) return;
+                addBundleFlag(row);
+            });
+        }
     }
+
     var scanTimer = null;
     function scheduleScan() {
         if (scanTimer) clearTimeout(scanTimer);
