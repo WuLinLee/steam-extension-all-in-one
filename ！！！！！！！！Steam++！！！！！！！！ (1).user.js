@@ -1,7 +1,9 @@
 // ==UserScript==
 // @name        ！！！！！！！！Steam++！！！！！！！！
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
-// @version      2.1
+// @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
+// @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
+// @version      2.2
 // @description  steam++
 // @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -341,6 +343,7 @@ steam-extension-all-in-one */
             faBundleData = cached;
             faBundleLoading = false;
             console.log('[Bundle] 缓存命中: ' + Object.keys(cached).length + ' 条记录');
+            scanCards();
             return;
         }
         GM_xmlhttpRequest({
@@ -358,6 +361,7 @@ steam-extension-all-in-one */
                     GM_setValue(FA_BUNDLE_CACHE_KEY, json);
                     GM_setValue(FA_BUNDLE_CACHE_KEY_TIME, Date.now());
                     console.log('[Bundle] 数据加载完成: ' + Object.keys(json).length + ' 条记录');
+                    scanCards();
                 } catch(e) {
                     console.warn('[Bundle] 数据解析失败:', e);
                 } finally {
@@ -426,10 +430,10 @@ steam-extension-all-in-one */
     ].join(',');
     function scanCards() {
         document.querySelectorAll(CARD_SELECTOR).forEach(function(el) {
-            if (el.dataset.faBundleScanned) return;
-            el.dataset.faBundleScanned = '1';
             if (el.tagName === 'A' && !el.querySelector('img')) return;
+            // 数据晚于卡片加载时，后续扫描仍会尝试补上标记。
             addBundleFlag(el);
+            if (el.querySelector('.fa-bundle-flag')) el.dataset.faBundleScanned = '1';
         });
     }
     var scanTimer = null;
@@ -693,10 +697,11 @@ steam-extension-all-in-one */
             const subNames = {};
             if (gameData.package_groups) {
                 gameData.package_groups.forEach(group => {
-                    group.subs.forEach(sub => {
+                    (group.subs || []).forEach(sub => {
+                        if (!sub) return;
                         if (sub.can_get_free_license === '0' || sub.price_in_cents_with_discount > 0) {
                             subIds.push(sub.packageid);
-                            let name = sub.option_text.replace(/Purchase |Buy /gi, '').replace(/\(.*\)/, '').trim();
+                            let name = String(sub.option_text || '').replace(/Purchase |Buy /gi, '').replace(/\(.*\)/, '').trim();
                             subNames[sub.packageid] = name;
                         }
                     });
@@ -729,9 +734,14 @@ steam-extension-all-in-one */
         proxyRequest(url, (data) => {
             if (data && data.success && data.result) {
                 const list = data.result.content || (Array.isArray(data.result) ? data.result : []);
-                let matches = list.filter(item => String(item.appId) === String(targetAppId));
+                const normalizeName = value => String(value || '').toLowerCase()
+                    .replace(/[™®©]/g, '')
+                    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+                    .trim();
+                let matches = list.filter(item => item && String(item.appId) === String(targetAppId));
                 if (matches.length === 0) {
-                    matches = list.filter(item => item.gameName.toLowerCase().includes(cleanName.toLowerCase())).slice(0, 3);
+                    const wanted = normalizeName(cleanName);
+                    matches = list.filter(item => item && normalizeName(item.gameName) === wanted).slice(0, 3);
                 }
                 matches.forEach(m => m.versionName = m.gameName);
                 callback(matches);
@@ -740,6 +750,12 @@ steam-extension-all-in-one */
             }
         });
     }
+    function escapeHTML(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[ch]));
+    }
+
     function generateHTML(results) {
         if (!results || results.length === 0) {
             return `<div class="cortana-price-box cortana-simple"><span style="color:#888;">未找到 SteamPy 货源</span></div>`;
@@ -756,16 +772,18 @@ steam-extension-all-in-one */
         let displayName = item.versionName || item.gameName || "版本";
         displayName = displayName.replace(/[¥$€£]\s*[\d,]+(\.\d{1,2})?/g, '').trim();
         if (!displayName) displayName = "版本";
+        displayName = escapeHTML(displayName);
+        const gameId = encodeURIComponent(String(item.id || ''));
         const dai = Number(item.daiPrice) || 0;
         const key = Number(item.keyPrice) || 0;
         let html = `<div class="cortana-price-box cortana-simple" style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px;">`;
         html += `<span style="font-weight:bold; color:#66c0f4; font-size:13px;">${displayName}</span>`;
         html += `<div style="display:flex; gap:8px;">`;
         if (dai > 0) {
-            html += `<a href="https://steampy.com/hotGameDetail?gameId=${item.id}" target="_blank" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">代购购买</a>`;
+            html += `<a href="https://steampy.com/hotGameDetail?gameId=${gameId}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">代购购买</a>`;
         }
         if (key > 0) {
-            html += `<a href="https://steampy.com/cdkDetail?name=cn&gameId=${item.id}" target="_blank" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">CDK购买</a>`;
+            html += `<a href="https://steampy.com/cdkDetail?name=cn&gameId=${gameId}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">CDK购买</a>`;
         }
         if (dai === 0 && key === 0) {
             html += `<span style="color:#888;">无购买选项</span>`;
@@ -894,7 +912,7 @@ steam-extension-all-in-one */
                         btn.onclick = null;
                         if (dai > 0) {
                             const a1 = document.createElement('a');
-                            a1.href = `https://steampy.com/hotGameDetail?gameId=${item.id}`;
+                            a1.href = `https://steampy.com/hotGameDetail?gameId=${gameId}`;
                             a1.target = '_blank';
                             a1.textContent = '代';
                             a1.style.cssText = `
@@ -910,7 +928,7 @@ steam-extension-all-in-one */
                         }
                         if (key > 0) {
                             const a2 = document.createElement('a');
-                            a2.href = `https://steampy.com/cdkDetail?name=cn&gameId=${item.id}`;
+                            a2.href = `https://steampy.com/cdkDetail?name=cn&gameId=${gameId}`;
                             a2.target = '_blank';
                             a2.textContent = 'K';
                             a2.style.cssText = `
