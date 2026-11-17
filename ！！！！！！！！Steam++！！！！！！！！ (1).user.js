@@ -155,10 +155,10 @@ steam-extension-all-in-one */
         observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
     }
     function checkAndRequestNew() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         const neededApp = [], neededSub = [], neededBundle = [];
         rows.forEach(row => {
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -193,11 +193,11 @@ steam-extension-all-in-one */
         }
     }
     async function fetchAndUpdateWishlist() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         if (rows.length === 0) return;
         const appIds = [], subIds = [], bundleIds = [];
         rows.forEach(row => {
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -234,9 +234,9 @@ steam-extension-all-in-one */
         }
     }
     function updateVisibleRows() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         rows.forEach(row => {
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -266,10 +266,10 @@ steam-extension-all-in-one */
         });
     }
     function restoreMissingFromCache() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         rows.forEach(row => {
             if (row.querySelector('.game_lowest_price')) return;
-            const link = row.querySelector('a[href*="store.steampowered.com"]');
+            const link = row.querySelector('a[href*="/app/"], a[href*="/sub/"], a[href*="/bundle/"]');
             if (!link) return;
             const match = link.href.match(/(app|sub|bundle)\/(\d+)/);
             if (!match) return;
@@ -495,7 +495,7 @@ steam-extension-all-in-one */
             }
             if (needScan) scheduleScan();
         });
-        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
+        observer.observe(document.body, { childList: true, subtree: true });
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
@@ -645,7 +645,7 @@ steam-extension-all-in-one */
                 observer.disconnect();
                 resolve(null);
             }, 9000);
-            observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
+            observer.observe(document.body, { childList: true, subtree: true });
         });
     }
 
