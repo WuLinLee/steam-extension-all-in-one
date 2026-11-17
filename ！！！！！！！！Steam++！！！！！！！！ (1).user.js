@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
-// @version      2.2
+// @version      2.3
 // @description  steam++
 // @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -176,10 +176,12 @@ steam-extension-all-in-one */
         fetchAndUpdateWishlist();
         const observer = new MutationObserver(() => {
             clearTimeout(pendingTimer);
-            pendingTimer = setTimeout(() => { checkAndRequestNew(); }, 300);
+            pendingTimer = setTimeout(() => {
+                checkAndRequestNew();
+                restoreMissingFromCache();
+            }, 300);
         });
         observer.observe(document.body, { childList: true, subtree: true });
-        setInterval(() => { restoreMissingFromCache(); }, 1000);
     }
     function checkAndRequestNew() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
@@ -630,50 +632,63 @@ steam-extension-all-in-one */
         });
         return btn;
     }
+    function waitForPurchaseArea() {
+        const findTarget = () => document.querySelector('div.game_area_purchase_game')
+            || document.querySelector('div.notice_box_content');
+        const existing = findTarget();
+        if (existing) return Promise.resolve(existing);
+
+        return new Promise(resolve => {
+            const observer = new MutationObserver(() => {
+                const target = findTarget();
+                if (!target) return;
+                observer.disconnect();
+                clearTimeout(timer);
+                resolve(target);
+            });
+            const timer = setTimeout(() => {
+                observer.disconnect();
+                resolve(null);
+            }, 9000);
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    }
+
     async function main() {
         const appid = getAppId();
         if (!appid) return;
         const localizedTitle = getGameTitle();
         if (!localizedTitle) return;
+
+        // 先用页面已有标题创建可立即点击的链接；Steam 详情接口只负责随后修正 HLTB 搜索词。
         let hltbName = localizedTitle;
-        const details = await fetchAppDetails(appid);
-        if (details) {
-            const isDlc = details.type === 'dlc';
-            if (isDlc && details.fullgame) {
+        let hltbBtn = null;
+        fetchAppDetails(appid).then(details => {
+            if (!details) return;
+            if (details.type === 'dlc' && details.fullgame) {
                 hltbName = details.fullgame.name;
             } else if (details.name) {
                 hltbName = details.name;
             }
-        }
-        let attempts = 0;
-        const maxAttempts = 30;
-        const interval = setInterval(() => {
-            if (document.getElementById('hltb-py-btn') && document.getElementById('steamdb-py-btn')) {
-                clearInterval(interval);
-                return;
+            if (hltbBtn) {
+                const cleanName = hltbName.replace(/[’']s/g, '').replace(/[™®©'-]/g, '').trim();
+                hltbBtn.href = `https://howlongtobeat.com/?q=${encodeURIComponent(cleanName)}`;
             }
-            let targetElement = document.querySelector('div.game_area_purchase_game');
-            if (!targetElement) {
-                targetElement = document.querySelector('div.notice_box_content');
-            }
-            if (targetElement) {
-                hltbName = hltbName.replace(/[’']s/g, '').replace(/[™®©'-]/g, '').trim();
-                const hltbBtn = createButton('HLTB', `https://howlongtobeat.com/?q=${encodeURIComponent(hltbName)}`, 'hltb-py-btn', '6px');
-                const steamdbBtn = createButton('SteamDB', `https://steamdb.info/app/${appid}/`, 'steamdb-py-btn', '0');
-                const container = document.createElement('div');
-                container.style.cssText = 'display: block; text-align: left; margin-top: 8px;';
-                container.appendChild(hltbBtn);
-                container.appendChild(steamdbBtn);
-                targetElement.appendChild(container);
-                console.log('[合并] HLTB 和 SteamDB 按钮已插入到大框内部左下角');
-                clearInterval(interval);
-            }
-            attempts++;
-            if (attempts >= maxAttempts) {
-                clearInterval(interval);
-                console.log('[合并] 未找到购买框或停售框，放弃插入');
-            }
-        }, 300);
+        }).catch(() => {});
+
+        const targetElement = await waitForPurchaseArea();
+        if (!targetElement || document.getElementById('hltb-py-btn')) return;
+
+        const cleanName = hltbName.replace(/[’']s/g, '').replace(/[™®©'-]/g, '').trim();
+        hltbBtn = createButton('HLTB', `https://howlongtobeat.com/?q=${encodeURIComponent(cleanName)}`, 'hltb-py-btn', '6px');
+        const steamdbBtn = createButton('SteamDB', `https://steamdb.info/app/${appid}/`, 'steamdb-py-btn', '0');
+
+        const container = document.createElement('div');
+        container.style.cssText = 'display: block; text-align: left; margin-top: 8px;';
+        container.appendChild(hltbBtn);
+        container.appendChild(steamdbBtn);
+        targetElement.appendChild(container);
+        console.log('[合并] HLTB 和 SteamDB 按钮已插入到购买区域');
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', main);
