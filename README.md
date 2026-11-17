@@ -2,7 +2,7 @@
 
 将常用的 Steam 价格查询、游戏捆绑包记录、通关时长和 SteamPy 查价功能整合到 Steam 网页中。仓库提供两个运行方式不同的整合脚本。
 
-> **脚本一和脚本二是二选一。不要在 Tampermonkey 和 Steam++ 中同时启用，也不要同时安装两个版本。** 两个版本包含大量重复功能，同时运行可能导致重复请求、重复按钮或界面冲突。
+> **脚本一和脚本二是二选一。不要同时启用，也不要同时安装两个版本。** 两个版本包含大量重复功能，同时运行可能导致重复请求、重复按钮或界面冲突。
 
 ## 一键安装
 
@@ -16,7 +16,7 @@
 
 更适合导入 Steam++（Watt Toolkit）的脚本配置。它提供 HLTB 和 SteamDB 快捷跳转按钮，但**没有脚本一那种自动查询并显示四类通关时长的 HLTB 面板**。脚本二也可以由 Tampermonkey 等用户脚本管理器运行。
 
-[![打开脚本二 Raw 文件](https://img.shields.io/badge/打开-Raw%20脚本二-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％20%281%29.user.js) [![查看脚本二](https://img.shields.io/badge/GitHub-查看脚本二源码-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81Steam%2B%2B%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%20%281%29.user.js)
+[![打开脚本二 Raw 文件](https://img.shields.io/badge/打开-Raw%20脚本二-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![查看脚本二](https://img.shields.io/badge/GitHub-查看脚本二源码-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
 ## 两个版本的功能区别
 
@@ -45,12 +45,12 @@
 3. 浏览器会打开用户脚本管理器的安装页面。
 4. 检查脚本信息后，点击安装即可。
 
-Edge 安装 Tampermonkey：打开 Edge 扩展商店，搜索 Tampermonkey，添加扩展，然后再点击本仓库的脚本安装链接。
+Edge 用户可以在 Edge 扩展商店搜索 Tampermonkey，添加扩展后再点击本仓库的脚本安装链接。
 
 ### 方式二：导入 Steam++ / Watt Toolkit（建议使用脚本二）
 
 1. 从 [Steam++ / Watt Toolkit 官网](https://steampp.net/) 下载并安装软件。
-2. 在本仓库上方打开**脚本二**的 GitHub 文件页，点击右上角下载按钮，下载 `.user.js` 文件。
+2. 打开上方**脚本二**的 GitHub 文件页，点击右上角下载按钮，下载 `.user.js` 文件。
 3. 打开 Steam++ / Watt Toolkit。
 4. 进入 **网络加速 → 加速设置**，启用 **启用脚本**。
 5. 进入 **网络加速 → 脚本配置**，点击 **+ 导入**，选择刚才下载的脚本文件。
@@ -102,7 +102,7 @@ Edge 安装 Tampermonkey：打开 Edge 扩展商店，搜索 Tampermonkey，添�
 
 ## 上游来源与代码致谢
 
-本项目是整合、改写性质的个人脚本集合，并非所有代码均为从零原创。以下列出 README 编写时能够确认的上游来源，以及它们与本仓库功能的对应关系。
+本项目是整合、改写性质的个人脚本集合，并非所有代码均为从零原创。以下列出能够确认的上游来源，以及它们与本仓库功能的对应关系。
 
 | 本仓库功能 | 上游项目 / 页面 | 对应情况 |
 | :--- | :--- | :--- |
