@@ -26,13 +26,13 @@ The original copyright and license notices for this component must be preserved.
 
 ## 2. Recovered Chrome extension source code; license not yet established
 
-The source files for the following two Chrome extensions have now been recovered and are archived in [WuLinLee/back](https://github.com/WuLinLee/back):
+The following two Chrome extensions are the upstream products. Their extension packages were unpacked for code-provenance comparison, and personal backup copies of the unpacked files are stored in [WuLinLee/back](https://github.com/WuLinLee/back). **That repository is maintained as a personal backup by this repository maintainer; it is not an official source-code repository, original distribution channel, or rights-holder statement for either extension.**
 
 ### HLTB for Steam
 
 - Extension listing: [HLTB for Steam (Chrome Web Store)](https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap)
-- Archived extension version: **1.1.8**
-- Source archive: [back/1.1.8_0](https://github.com/WuLinLee/back/tree/main/1.1.8_0)
+- Version represented by the personal backup: **1.1.8**
+- Personal unpacked backup copy: [back/1.1.8_0](https://github.com/WuLinLee/back/tree/main/1.1.8_0)
 - Relevant files: [content.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/content.js), [background.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/background.js), [lib/hltb-client.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/hltb-client.js), [lib/matcher.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/matcher.js), and [lib/cache.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/cache.js).
 
 The HLTB integration in this repository has corresponding implementation for HLTB search, endpoint/auth handling, result matching, caching, and display. The userscript adapts and combines that functionality for the userscript environment.
@@ -40,13 +40,13 @@ The HLTB integration in this repository has corresponding implementation for HLT
 ### PY查价助手
 
 - Extension listing: [PY查价助手 (Chrome Web Store)](https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok)
-- Archived extension version: **1.0**
-- Source archive: [back/1.0_0](https://github.com/WuLinLee/back/tree/main/1.0_0)
+- Version represented by the personal backup: **1.0**
+- Personal unpacked backup copy: [back/1.0_0](https://github.com/WuLinLee/back/tree/main/1.0_0)
 - Relevant files: [content.js](https://github.com/WuLinLee/back/blob/main/1.0_0/content.js) and [background.js](https://github.com/WuLinLee/back/blob/main/1.0_0/background.js).
 
 The SteamPy integration has corresponding implementation for Steam package lookup, SteamPy price requests, game-name fallback search, and wishlist price display. The userscript adapts the request mechanism to use the userscript manager's request API.
 
-**Important licensing limitation:** The recovered `back` repository contains the unpacked extension files, but no LICENSE file or explicit license grant for either extension was found in the repository. A publicly accessible source archive is not, by itself, permission to relicense or redistribute the source. The Chrome Web Store listing is also not a source-code license.
+**Important licensing limitation:** `WuLinLee/back` is only a personal backup of unpacked extension packages. It is not operated by the extension authors and does not establish who owns the original code or what license the authors grant. No LICENSE file or explicit license grant for either extension was found alongside the backed-up files. The existence of an unpacked copy in this backup repository does not create permission to relicense, redistribute, or commercially use the extension code. The applicable terms must come from the original extension authors or another verifiable rights holder.
 
 Until the original extension authors' licensing terms or permission are verified, this notice does not grant permission to redistribute, relicense, or commercially use those third-party components. Check the original source, license file, author statements, or obtain permission from the relevant rights holder before redistributing them.
 
