@@ -2,7 +2,7 @@
 
 This repository is a mixed-origin project. **There is currently no single, blanket open-source license for the entire repository.** Do not assume that every file or every section of the combined userscripts may be redistributed under one license.
 
-This notice is provided to identify the licensing status that can currently be established. It does not replace, narrow, or revoke the rights granted by the original authors of third-party material.
+This notice records the upstream sources and licensing information that can currently be established. It does not replace, narrow, or revoke rights granted by the original authors of third-party material.
 
 ## 1. Components with identified upstream GPL licensing
 
@@ -20,20 +20,35 @@ The original copyright and license notices for this component must be preserved.
 The bundle-history indicator is based in part on the Barter.vg bundle-data and game-card marking functionality from:
 
 - Upstream: [Steam Family Game Analysis (GreasyFork #588235)](https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable)
-- Upstream license: **GPLv3** (the upstream script identifies GPLv3).
+- Upstream license: **GPLv3**, as identified by the upstream script.
 
 The original copyright and license notices for this component must be preserved. Modifications and derivative distributions must comply with the applicable GPLv3 terms.
 
-## 2. Components whose complete source licensing has not been verified
+## 2. Recovered Chrome extension source code; license not yet established
 
-The repository also lists the following projects as functional references:
+The source files for the following two Chrome extensions have now been recovered and are archived in [WuLinLee/back](https://github.com/WuLinLee/back):
 
-- [HLTB for Steam (Chrome Web Store)](https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap)
-- [PY查价助手 (Chrome Web Store)](https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok)
+### HLTB for Steam
 
-A store listing or feature description is not itself a source-code license. The precise license and permission for any code copied or adapted from these projects have not been independently established here.
+- Extension listing: [HLTB for Steam (Chrome Web Store)](https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap)
+- Archived extension version: **1.1.8**
+- Source archive: [back/1.1.8_0](https://github.com/WuLinLee/back/tree/main/1.1.8_0)
+- Relevant files: [content.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/content.js), [background.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/background.js), [lib/hltb-client.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/hltb-client.js), [lib/matcher.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/matcher.js), and [lib/cache.js](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/cache.js).
 
-**This notice does not grant permission to redistribute, relicense, or commercially use third-party code whose license or permission has not been verified.** Check the original source, license file, author statements, or obtain permission from the relevant rights holder before redistributing those portions.
+The HLTB integration in this repository has corresponding implementation for HLTB search, endpoint/auth handling, result matching, caching, and display. The userscript adapts and combines that functionality for the userscript environment.
+
+### PY查价助手
+
+- Extension listing: [PY查价助手 (Chrome Web Store)](https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok)
+- Archived extension version: **1.0**
+- Source archive: [back/1.0_0](https://github.com/WuLinLee/back/tree/main/1.0_0)
+- Relevant files: [content.js](https://github.com/WuLinLee/back/blob/main/1.0_0/content.js) and [background.js](https://github.com/WuLinLee/back/blob/main/1.0_0/background.js).
+
+The SteamPy integration has corresponding implementation for Steam package lookup, SteamPy price requests, game-name fallback search, and wishlist price display. The userscript adapts the request mechanism to use the userscript manager's request API.
+
+**Important licensing limitation:** The recovered `back` repository contains the unpacked extension files, but no LICENSE file or explicit license grant for either extension was found in the repository. A publicly accessible source archive is not, by itself, permission to relicense or redistribute the source. The Chrome Web Store listing is also not a source-code license.
+
+Until the original extension authors' licensing terms or permission are verified, this notice does not grant permission to redistribute, relicense, or commercially use those third-party components. Check the original source, license file, author statements, or obtain permission from the relevant rights holder before redistributing them.
 
 ## 3. Original contributions
 
