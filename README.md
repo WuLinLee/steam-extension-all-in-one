@@ -1,16 +1,16 @@
 # Steam Extension All-in-One
 
-将常用的 Steam 价格查询、游戏捆绑包记录、通关时长和 SteamPy 查价功能整合到 Steam 网页中。仓库提供两个运行方式不同的整合脚本。
+将 Steam 历史最低价、游戏进包记录、HLTB 通关时长和 SteamPy 查价整合到 Steam 网页中。仓库提供两个运行方式不同的脚本：**整合版 v1.9** 和 **Steam++ 快捷版 v2.6**。
 
 > **脚本一和脚本二是二选一。不要同时启用，也不要同时安装两个版本。** 两个版本包含大量重复功能，同时运行可能导致重复请求、重复按钮或界面冲突。
 
 ## 一键安装
 
-### 脚本一：Tampermonkey 整合功能（Tampermonkey 完整版 steam++上 HLTB有问题）
+### 脚本一：Tampermonkey 整合版 v1.9（完整 HLTB 通关时长面板）
 
 [![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![下载脚本一](https://img.shields.io/badge/Download-Script%201-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
-### 脚本二：Steam++ 整合功能（Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用）
+### 脚本二：Steam++ 快捷版 v2.6（也可在 Tampermonkey 中运行）
 
 [![安装脚本二](https://img.shields.io/badge/Install-Script%202-lightgrey?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![下载脚本二](https://img.shields.io/badge/Download-Script%202-blue?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
 
@@ -39,7 +39,7 @@
 | 功能 | 脚本一：Tampermonkey 完整版 | 脚本二：Steam++ 版 |
 | :--- | :---: | :---: |
 | 愿望单历史最低价 | ✓ | ✓ |
-| 愿望单史低地区切换 | ✓ | ✓ |
+| 愿望单中国区史低查询 / 手动刷新 | ✓ | ✓ |
 | 游戏详情页史低 | ✓ | ✓ |
 | 游戏进包次数标记 | ✓ | ✓ |
 | HLTB 自动查询及通关时长面板 | ✓ | — |
@@ -58,9 +58,9 @@
 
 在 Steam 愿望单游戏条目旁显示历史最低价、折扣幅度和发生日期，帮助判断当前价格是否值得购买。
 
-愿望单右上角提供地区切换，可选择中国、日本、土耳其、美国和香港。切换地区后会重新查询对应地区的历史价格。
+愿望单固定查询中国区历史价格。右上角的刷新按钮使用 Steam 自己的刷新图标，点击后重新获取中国区史低数据；不再提供国家/地区切换。
 
-在单个游戏、套餐或捆绑包详情页，也会尝试在标题附近显示历史最低价。商品页单独查询使用中国区数据。
+在单个游戏、套餐或捆绑包详情页，也会尝试在标题附近显示中国区历史最低价。
 
 ### 2. 游戏进包次数标记
 
@@ -79,7 +79,7 @@
 - **主线 + 支线**：完成主线及支线所需时长。
 - **完美通关**：完成度较高的全收集/全内容时长。
 
-自动匹配失败时，可以在面板中输入游戏名称重新搜索；清除按钮可以清理当前游戏的查询缓存并重新获取数据。对于 DLC，脚本会尝试使用对应本体游戏进行回退查询。
+自动匹配时优先使用 Steam AppID，并结合发行年份区分同名游戏。匹配失败时，可以在面板中输入游戏名称重新搜索；清除按钮可以清理当前游戏的查询缓存并重新获取数据。对于 DLC，脚本会尝试使用对应本体游戏进行回退查询。
 
 脚本二不包含这套自动查询面板，只在游戏购买区域提供 **HLTB** 搜索快捷按钮，并提供 **SteamDB** 快捷按钮。
 
@@ -92,7 +92,7 @@
 - **代**：代购商品页面。
 - **K**：CDK 商品页面。
 
-如果没有找到可用结果，会显示无价格或未找到货源。查价结果由 SteamPy 返回，价格、库存和商品可用性可能变化；跳转前请自行核对商品名称、版本、地区限制、激活条件和卖家信息。
+如果没有找到可用结果，会显示无价格、未找到货源或无有效购买链接，不会留下空白的「代 / K」框。查价结果由 SteamPy 返回，价格、库存和商品可用性可能变化；跳转前请自行核对商品名称、版本、地区限制、激活条件和卖家信息。
 
 ## 上游来源与代码致谢
 
@@ -101,6 +101,7 @@
 | 本仓库功能 | 上游项目 / 页面 | 对应情况 |
 | :--- | :--- | :--- |
 | 愿望单史低查询、地区选择 | [Steam 史低自动查询（GreasyFork）](https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8) · [代码页](https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8/code) | 代码结构和史低查询请求逻辑有明确对应；本仓库对界面、缓存和页面适配作了调整。 |
+| 愿望单刷新图标 | [Steam Labs Deep Dive 原始脚本](https://github.com/SteamTracking/SteamTracking/blob/master/store.steampowered.com/public/javascript/labs/divingbell.js) · [Steam Labs 样式](https://github.com/SteamTracking/SteamTracking/blob/master/store.steampowered.com/public/css/labs/divingbell.css) | 使用 Steam CDN 上的 `refresh.svg` 原始资源，不使用字符或自行绘制的 SVG。 |
 | 游戏进包次数标记 | [Steam Family Game Analysis（GreasyFork）](https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable) · [代码页](https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable/code) | 对应其 Barter.vg Bundle 数据读取、缓存和游戏卡片标记模块；本仓库只整合了进包标记相关功能。 |
 | HLTB 通关时长 | 原始扩展：[HLTB for Steam（Chrome Web Store）](https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap) · 个人备份中的对应版本解包副本：[`back/1.1.8_0`](https://github.com/WuLinLee/back/tree/main/1.1.8_0)、[`content.js`](https://github.com/WuLinLee/back/blob/main/1.1.8_0/content.js)、[`background.js`](https://github.com/WuLinLee/back/blob/main/1.1.8_0/background.js)、[`hltb-client.js`](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/hltb-client.js)、[`matcher.js`](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/matcher.js)、[`cache.js`](https://github.com/WuLinLee/back/blob/main/1.1.8_0/lib/cache.js) | 上游是 Chrome Web Store 发布的 HLTB for Steam 扩展；`WuLinLee/back` 只是维护者保存的 1.1.8 版本个人解包备份，不是扩展作者的官方源码仓库或原始发布渠道。整合脚本一使用了对应的 HLTB 查询、端点发现/认证、缓存和游戏匹配逻辑，并改为用户脚本环境运行；页面面板和部分处理流程也经过整合调整。 |
 | SteamPy 查价 | 原始扩展：[PY查价助手（Chrome Web Store）](https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok) · 个人备份中的对应版本解包副本：[`back/1.0_0`](https://github.com/WuLinLee/back/tree/main/1.0_0)、[`content.js`](https://github.com/WuLinLee/back/blob/main/1.0_0/content.js)、[`background.js`](https://github.com/WuLinLee/back/blob/main/1.0_0/background.js) | 上游是 Chrome Web Store 发布的 PY查价助手扩展；`WuLinLee/back` 只是维护者保存的 1.0 版本个人解包备份，不是扩展作者的官方源码仓库或原始发布渠道。整合脚本中的 API 地址、Steam 套餐读取、按套餐 ID/游戏名查询和愿望单查价流程，与该版本 content.js 有直接代码对应；请求代理则改为使用用户脚本的 GM_xmlhttpRequest。 |
@@ -117,7 +118,21 @@
 
 ## 更新说明
 
-当前两个脚本头部没有显式设置 `@updateURL` 和 `@downloadURL`，因此本 README 不承诺用户脚本管理器一定能够自动更新。需要更新时，请回到本仓库查看最新版本，并重新安装或手动更新对应脚本。
+### 当前版本（2026-11-17）
+
+| 脚本 | 当前版本 | 适用方式 |
+| :--- | :---: | :--- |
+| 脚本一：Tampermonkey 整合版 | **1.9** | Tampermonkey / 兼容用户脚本管理器 |
+| 脚本二：Steam++ 快捷版 | **2.6** | Steam++ 脚本配置 / Tampermonkey |
+
+本次更新：
+
+- 愿望单右上角改用 Steam Labs Deep Dive 使用的原版刷新 SVG 图标，点击后刷新中国区史低数据。
+- 愿望单史低请求增加超时处理，失败后可以重新尝试；修正折扣信息缺失时的显示。
+- 修复 SteamPy 商品页购买表单晚加载时可能漏掉查价的问题，并加强异常响应和无效购买链接处理。
+- 整合版首次 HLTB 自动查询也会使用发行年份辅助区分同名游戏。
+
+两个脚本均在脚本头部配置了 `@updateURL` 和 `@downloadURL`。Tampermonkey 等脚本管理器可按自身更新检查设置获取新版本；Steam++ 用户可在其脚本管理界面检查/更新导入脚本。
 
 ## 问题反馈
 
