@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
-// @version      1.7
+// @version      1.8
 // @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -187,7 +187,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         button.className = 'shc-refresh';
         button.title = '刷新中国区史低价格';
         button.setAttribute('aria-label', '刷新中国区史低价格');
-        button.innerHTML = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18.5 6L20 12M4 12l1.5 6A7 7 0 0 0 18.4 15"/></svg>';
+        button.textContent = '↻';
         button.addEventListener('click', refreshWishlistPrices);
         return button;
     }
@@ -406,7 +406,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
     }
 
     GM_addStyle(`
-        .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; color:#c6d4df; background:transparent; border:0; cursor:pointer; }
+        .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; color:#c6d4df; background:transparent; border:0; cursor:pointer; font-family:'Segoe UI Symbol',sans-serif; font-size:24px; line-height:1; }
         .shc-refresh:hover { color:#fff; }
         .game_lowest_price { word-break: keep-all; }
     `);
