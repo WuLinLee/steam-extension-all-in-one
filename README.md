@@ -1,204 +1,130 @@
-# Steam‑Extension‑All‑in‑One
+# Steam Extension All-in-One
+
+将常用的 Steam 价格查询、游戏捆绑包记录、通关时长和 SteamPy 查价功能整合到 Steam 网页中。仓库提供两个运行方式不同的整合脚本。
+
+> **脚本一和脚本二是二选一。不要在 Tampermonkey 和 Steam++ 中同时启用，也不要同时安装两个版本。** 两个版本包含大量重复功能，同时运行可能导致重复请求、重复按钮或界面冲突。
 
 ## 一键安装
 
-### 脚本一：Tampermonkey 整合功能（Tampermonkey 完整版 steam++上 HLTB有问题）
+### 脚本一：Tampermonkey 完整版
 
-[![安装脚本一](https://img.shields.io/badge/Install-Script%201-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![下载脚本一](https://img.shields.io/badge/Download-Script%201-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
+包含完整的 HLTB 通关时长查询面板，适合使用 Tampermonkey、Violentmonkey 等用户脚本管理器。
 
-### 脚本二：Steam++ 整合功能（Tampermonkey可以用 但更建议在steam++上用 因为导入脚本开启加速后可以直接在steam客户端和steam网页上使用）
+[![安装脚本一](https://img.shields.io/badge/安装-Tampermonkey%20脚本一-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js) [![查看脚本一](https://img.shields.io/badge/GitHub-查看脚本一源码-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js)
 
-[![安装脚本二](https://img.shields.io/badge/Install-Script%202-lightgrey?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js) [![下载脚本二](https://img.shields.io/badge/Download-Script%202-blue?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js)
+### 脚本二：Steam++ / Watt Toolkit 版
 
-> **点击 **INSTALL** 按钮，脚本管理器会自动弹出安装确认框。**（前提是你安装了 Tampermonkey/篡改猴/油猴 同一个东西）（另一种安装方式是打开 GitHub 文件页点 Raw）
+更适合导入 Steam++（Watt Toolkit）的脚本配置。它提供 HLTB 和 SteamDB 快捷跳转按钮，但**没有脚本一那种自动查询并显示四类通关时长的 HLTB 面板**。脚本二也可以由 Tampermonkey 等用户脚本管理器运行。
 
-> **点击 **DOWNLOAD** 按钮，会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件。**
+[![打开脚本二 Raw 文件](https://img.shields.io/badge/打开-Raw%20脚本二-blue?style=for-the-badge)](https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％EF％BC％81％20%281%29.user.js) [![查看脚本二](https://img.shields.io/badge/GitHub-查看脚本二源码-lightgrey?style=for-the-badge)](https://github.com/WuLinLee/steam-extension-all-in-one/blob/main/%EF%BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81Steam%2B%2B%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%EF％BC％81%20%281%29.user.js)
 
-> **不要在steam++和油猴上都开启脚本，两个脚本有很多地方是重复的不需要重复开启脚本，总之只保留一个脚本一处开启就对了**
+## 两个版本的功能区别
 
-### Tampermonkey/篡改猴/油猴 安装操作顺序
+| 功能 | 脚本一：Tampermonkey 完整版 | 脚本二：Steam++ 版 |
+| :--- | :---: | :---: |
+| 愿望单历史最低价 | ✓ | ✓ |
+| 愿望单史低地区切换 | ✓ | ✓ |
+| 游戏详情页史低 | ✓ | ✓ |
+| 游戏进包次数标记 | ✓ | ✓ |
+| HLTB 自动查询及通关时长面板 | ✓ | — |
+| HLTB 搜索/查看快捷入口 | 面板内提供 | ✓ |
+| SteamDB 快捷入口 | — | ✓ |
+| SteamPy 代购/CDK 查价 | ✓ | ✓ |
 
-> **Edge → 右上角三个点 … → 扩展 → 获取 Microsoft Edge 扩展 → 搜索 Tampermonkey 或者 篡改猴 → 点第一个 → 添加扩展 → 完成 → 点击这个页面的 **INSTALL** 按钮，脚本管理器会自动弹出安装确认框，点安装**
+**怎么选：**
 
-### **Steam++**（瓦特工具箱）导入脚本二操作顺序 [Steam++官网](https://steampp.net/)
+- 想在 Steam 游戏页面直接看到主线、主线＋支线、完美通关和所有方式的平均时长，选**脚本一**。
+- 想在 Steam++ 中使用整合功能，并通过按钮跳转到 HLTB、SteamDB 查询，选**脚本二**。
 
-> **点上面蓝色的Steam++官网下载安装 Steam++**
+## 安装说明
 
-> **点击上方蓝色的 DOWNLOAD SCRIPT2 按钮（建议下载脚本二）会打开 GitHub 文件页，右上角点下载图标即可拿到 `.js` 文件，下载警告点保留**
+### 方式一：使用 Tampermonkey（脚本一或脚本二）
 
-> **打开Steam++/Watt Toolkit** → **网络加速 → 加速设置 → 打开 “启用脚本”**
+1. 在浏览器安装 [Tampermonkey（篡改猴）](https://www.tampermonkey.net/)。
+2. 根据需要点击上方对应脚本的 **安装** / **Raw** 链接。
+3. 浏览器会打开用户脚本管理器的安装页面。
+4. 检查脚本信息后，点击安装即可。
 
-> **打开Steam++/Watt Toolkit** → **网络加速 → 脚本配置 → +导入 → 选中下载的.js脚本 点打开 → 添加成功 → 网络加速 → 一键加速 操作之后只需要一键加速就行**
+Edge 安装 Tampermonkey：打开 Edge 扩展商店，搜索 Tampermonkey，添加扩展，然后再点击本仓库的脚本安装链接。
 
+### 方式二：导入 Steam++ / Watt Toolkit（建议使用脚本二）
 
+1. 从 [Steam++ / Watt Toolkit 官网](https://steampp.net/) 下载并安装软件。
+2. 在本仓库上方打开**脚本二**的 GitHub 文件页，点击右上角下载按钮，下载 `.user.js` 文件。
+3. 打开 Steam++ / Watt Toolkit。
+4. 进入 **网络加速 → 加速设置**，启用 **启用脚本**。
+5. 进入 **网络加速 → 脚本配置**，点击 **+ 导入**，选择刚才下载的脚本文件。
+6. 导入成功后，按平时的方式使用网络加速即可。
 
----
-源代码：
-https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8
+> Steam++ 的不同版本界面名称可能略有差异；找不到对应选项时，请以当前版本的脚本配置页面为准。
 
- https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable
+## 功能介绍
 
- https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap
+### 1. 愿望单与商品页历史最低价
 
- https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok
----
-A userscript (Tampermonkey / Violentmonkey) that adds various quality‑of‑life improvements for the Steam web store and community pages.
-## ⚠️ Important Notice, Copyright & Disclaimer
-> **This is a remixed, derivative work, NOT fully original code.**
+在 Steam 愿望单游戏条目旁显示历史最低价、折扣幅度和发生日期，帮助判断当前价格是否值得购买。
 
-This project aggregates feature ideas, code snippets and implementation logic
-from multiple publicly released, third‑party userscripts shared online.
-Large‑scale restructuring, code refactoring, logic rearrangement, and partial
-rewriting were performed with the assistance of AI tools, followed by manual
-tweaks and debugging.
+愿望单右上角提供地区切换，可选择中国、日本、土耳其、美国和香港。切换地区后会重新查询对应地区的历史价格。
 
-- **No global open‑source license is granted for the entire repository.**
-  I cannot verify that every segment of code contained here carries explicit,
-  redistributable permission from its original creator.
-  No MIT, GPL, CC0 or any other public‑license terms apply to the project as a whole.
-- Portions of code newly written or significantly transformed by me are shared
-  for reference only; you may not treat the whole repository as open‑source.
-- This project is made available **solely for non‑commercial, personal‑use and educational purposes**.
-  Commercial usage, paid distribution, bundling into paid software or services is prohibited.
-- The script is provided **AS‑IS**, without warranty of any kind, either expressed or implied.
-  There is no guarantee of compatibility, stability, safety or compliance with Steam’s Terms of Service.
-- You use this userscript entirely at your own risk.
-  I take no responsibility for, and shall not be liable for, any account restrictions,
-  bans, data loss, page breakage, or any other direct or indirect harm caused by running this script.
-- If you are the original author of any source code, algorithm, or distinct functional
-  implementation included in this work, and you do not wish your work to appear here,
-  please open a GitHub Issue with sufficient identifying information.
-  I will make reasonable efforts to locate and remove the relevant code segments promptly.
-- Forking this repository is permitted for your own private backup, but you **must not**
-  re‑publish, redistribute, or apply any formal open‑source license to your forked copy,
-  to avoid misleading others into believing all code is freely relicensable.
+在单个游戏、套餐或捆绑包详情页，也会尝试在标题附近显示历史最低价。商品页单独查询使用中国区数据。
 
-> 本油猴脚本属于**衍生混改作品，并非全部为从零原创**。
->
-> 本项目搜集整合了互联网上多个公开第三方用户脚本的功能思路、代码片段与实现逻辑，
-> 使用AI工具完成了大规模结构调整、代码重构、逻辑重排、改写生成，之后经过人工调整与调试。
->
-> - **整个仓库不存在全局开源许可证**：无法核验每一段代码都拥有可二次公开发布的完整授权，
->   整个项目不适用 MIT、GPL、CC0 等任何标准开源协议。
-> - 仅由我新增或深度改写的部分可作为学习参考，**不能视作全项目开源**。
-> - 本项目仅限**非商业、个人自用、学习研究**，禁止商用、付费分发、打包进收费产品。
-> - 脚本按现状原样提供，不作任何稳定性、安全性、合规性担保，**不保证遵守Steam平台用户协议**。
-> - 所有使用风险由使用者自行承担，作者不对账号限制、封禁、页面异常、数据问题等任何后果负责。
-> - 如果您是任意一段原始代码、独有功能实现的原作者，不希望成果被收录，请提交 GitHub Issue，
->   附带能够定位对应代码的信息，我会尽力排查并移除相关内容。
-> - 允许Fork做私人备份，但**禁止把Fork后的仓库重新公开发布、擅自套上开源协议**，
->   避免误导他人以为全部代码可以随意再分发。
+### 2. 游戏进包次数标记
 
----
+在识别到游戏 AppID 的 Steam 游戏卡片上显示黄色标签，例如：
 
-## 📦 Installation
-1. Install a userscript manager: Tampermonkey, Violentmonkey, or Greasemonkey.
-2. Open the raw link of `steam‑all‑in‑one.user.js`
-3. Your userscript manager will pop up an installation prompt.
-4. Confirm install.
+`进过 3 包`
 
-> Auto‑update is enabled if `@updateURL` is correctly set inside the script header.
+数据来自 [Barter.vg](https://barter.vg/)，脚本读取其公开的 Bundle JSON 数据，并在本地缓存约 48 小时。标签显示的是数据源记录的捆绑包数量，不代表当前仍能购买这些捆绑包。
 
----
+### 3. HLTB 通关时长
 
-## 📝 Changelog
-> Version number will be incremented on each functional update or bug fix.
-> No compatibility is guaranteed between different versions.
+脚本一包含完整 HLTB 查询面板，在 Steam 游戏详情页尝试显示：
 
----
+- **所有方式**：综合游玩时长。
+- **主线剧情**：只完成主线所需时长。
+- **主线 + 支线**：完成主线及支线所需时长。
+- **完美通关**：完成度较高的全收集/全内容时长。
 
-## 📮 Feedback & Issues
-- Bug reports, feature suggestions are welcome via GitHub Issues.
-- Requests to remove copyrighted material will be prioritized.
-# steam-extension-all-in-one
-/*不会写代码没精力维护*/
+自动匹配失败时，可以在面板中输入游戏名称重新搜索；清除按钮可以清理当前游戏的查询缓存并重新获取数据。对于 DLC，脚本会尝试使用对应本体游戏进行回退查询。
 
+脚本二不包含这套自动查询面板，只在游戏购买区域提供 **HLTB** 搜索快捷按钮，并提供 **SteamDB** 快捷按钮。
 
-## 脚本一：愿望单史低查询（帮你判断“现在买亏不亏”）
+### 4. PY 查价助手（SteamPy）
 
-**它解决什么问题？**
-Steam 愿望单默认只显示“当前价格”，但你不知道这价格是不是历史最低。这个脚本直接在游戏旁边给你亮出答案。
+在 Steam 游戏商店页，脚本会尝试查询当前选择的版本，并显示 SteamPy 上可用的代购或 CDK 购买入口。
 
-**它长什么样、显示什么？**
-在愿望单里，每个游戏右侧会多出一行字，例如：
-`史低 ¥22.1 -75% (2026-01-15)`
+在愿望单中，点击 **PY查价** 后开始查询；成功时会显示：
 
-- **¥22.1**：历史上最低价多少钱
-- **-75%**：那次打折打了多少折
-- **(日期)**：那次史低发生的具体时间
+- **代**：代购商品页面。
+- **K**：CDK 商品页面。
 
-**最核心的价值（小白必看）**：
-> 如果你看到“史低”是 ¥22，而现在的价格是 ¥30，那说明现在不是最低点，你可以再等等。如果现在正好就是历史最低价，那你现在买就是最划算的，不用犹豫。
+如果没有找到可用结果，会显示无价格或未找到货源。查价结果由 SteamPy 返回，价格、库存和商品可用性可能变化；跳转前请自行核对商品名称、版本、地区限制、激活条件和卖家信息。
 
-**额外功能（左上角切换国家）**：
-右上角有个下拉框，可以切换中国、日本、土耳其、美国、香港等地区，帮你比较不同区服的价格。比如某个游戏土耳其区史低只要 10 块钱，你可以心里有数（但注意跨区有风险）。
+## 上游来源与代码致谢
 
----
+本项目是整合、改写性质的个人脚本集合，并非所有代码均为从零原创。以下列出 README 编写时能够确认的上游来源，以及它们与本仓库功能的对应关系。
 
-## 脚本二：进包标记（帮你判断“这游戏值不值钱”）
+| 本仓库功能 | 上游项目 / 页面 | 对应情况 |
+| :--- | :--- | :--- |
+| 愿望单史低查询、地区选择 | [Steam 史低自动查询（GreasyFork）](https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8) · [代码页](https://greasyfork.org/zh-CN/scripts/586080-steam-%E5%8F%B2%E4%BD%8E%E8%87%AA%E5%8A%A8%E6%9F%A5%E8%AF%A2-%E6%84%BF%E6%9C%9B%E5%8D%95-%E4%B8%AD%E6%97%A5%E5%9C%9F%E7%BE%8E-%E5%8D%95%E5%95%86%E5%93%81%E9%A1%B5-%E4%B8%AD-%E6%89%8B%E6%9C%BA%E7%94%B5%E8%84%91%E9%80%9A%E7%94%A8/code) | 代码结构和史低查询请求逻辑有明确对应；本仓库对界面、缓存和页面适配作了调整。 |
+| 游戏进包次数标记 | [Steam Family Game Analysis（GreasyFork）](https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable) · [代码页](https://greasyfork.org/zh-CN/scripts/588235-steam-family-game-analysis-publishable/code) | 对应其 Barter.vg Bundle 数据读取、缓存和游戏卡片标记模块；本仓库只整合了进包标记相关功能。 |
+| HLTB 通关时长 | [HLTB for Steam（Chrome Web Store）](https://chromewebstore.google.com/detail/hltb-for-steam/hcfnndjmgbpndcninokmfmlblngabgap) | 功能参考来源。商店页面不是可直接核对的完整源代码链接，因此不将其描述为已逐行确认的代码来源。 |
+| SteamPy 查价 | [PY查价助手（Chrome Web Store）](https://chromewebstore.google.com/detail/py%E6%9F%A5%E4%BB%B7%E5%8A%A9%E6%89%8B/aeapdkmgpgihkiebomafllebjbjpmfok) | 功能参考来源。商店页面不是可直接核对的完整源代码链接；本仓库的请求地址和页面处理逻辑可在脚本中查看。 |
 
-**它解决什么问题？**
-很多游戏会被塞进“慈善包”或“捆绑包”里贱卖过。一旦进过包，这个游戏以后就很难再卖出高价了。这个脚本直接给这种游戏打个“标签”，让你一眼识别。
+### 许可证与使用说明
 
-**它长什么样、显示什么？**
-在 Steam 任何页面的游戏封面/卡片右上角，会出现一个黄色小标签，写着比如：
-`进过3包`
+- 本仓库没有声明一个覆盖所有文件的统一许可证。不同功能模块可能包含来自上游项目的代码或衍生实现，应分别遵守相应上游项目的许可证及署名要求。
+- 上述两个 GreasyFork 项目页面标注了 GPL 系列许可证。涉及这些项目代码的部分，不能仅凭本仓库自己的说明就取消或替换上游许可证要求。
+- 两个 Chrome 扩展的商店介绍页不能代替其完整源代码和许可证文件。若要重新发布、再分发或用于其他项目，应先核对相应作者的授权条款。
+- 本仓库目前主要用于个人使用、学习和功能整合参考。**不要将整个仓库误认为已经获得统一的 MIT、GPL 或其他开源授权，也不要在未核实各部分授权前重新打包或分发。**
+- 脚本按现状提供，不保证持续兼容 Steam 页面、第三方接口或 Steam 平台规则。使用者应自行判断第三方购买链接、地区价格和账号操作风险。
 
-**最核心的价值（小白必看）**：
-> 如果你看到一个游戏挂着“进过5包”，说明这游戏曾经被当白菜价甩卖过，那你就不用急着原价买，它迟早还会再进包或打骨折。反过来，如果它从来没进过包，说明这游戏比较“硬”，打折幅度通常不会太大。
+如果你是上游代码作者，并认为某部分内容需要补充署名或移除，请通过 [GitHub Issues](https://github.com/WuLinLee/steam-extension-all-in-one/issues) 联系。
 
-**数据来源**：数据来自国外一个叫 Barter.vg 的网站，专门记录游戏历史上过哪些包，比较权威。
+## 更新说明
 
----
+当前两个脚本头部没有显式设置 `@updateURL` 和 `@downloadURL`，因此本 README 不承诺用户脚本管理器一定能够自动更新。需要更新时，请回到本仓库查看最新版本，并重新安装或手动更新对应脚本。
 
-## 脚本三：HLTB 通关时长（帮你规划“要玩多久”）
+## 问题反馈
 
-**它解决什么问题？**
-你看到一个游戏很心动，但不知道要花多少时间才能通关。这个脚本直接从“HowLongToBeat”网站把平均通关时间拉过来，显示在 Steam 页面上。
-
-**它长什么样、显示什么？**
-在 Steam 商店的购买按钮附近，会出现一块深色面板，上面显示四行数据：
-
-- **所有方式**：所有玩家平均时长（综合）
-- **主线剧情**：只做主线任务需要多少小时
-- **主线 + 支线**：顺带做支线任务需要多少小时
-- **完美通关**：全成就、全收集需要多少小时
-
-**最核心的价值（小白必看）**：
-> 如果你平时上班忙、游戏时间少，看到“主线剧情 80 小时”的游戏，就知道这得玩一两个月，可以先放一放。看到“完美通关 3 小时”的小游戏，周末半天就能搞定，可以立马买来玩。帮你合理分配宝贵的娱乐时间。
-
-**额外功能**：如果自动匹配不上，会显示一个搜索框，你输入游戏英文名后按回车，它会重新搜索。旁边还有个“清”字按钮，点一下会清除缓存并重新匹配。
-
----
-
-## 脚本四：PY 查价助手（帮你找“更便宜的渠道”）
-
-**它解决什么问题？**
-Steam 官方商店的价格不一定是最便宜的。SteamPy 是一个国内的第三方平台，可以买到“代购”或“CDK（激活码）”，价格有时候比 Steam 官方还便宜。这个脚本帮你一键对比并跳转购买。
-
-**它长什么样、怎么用？**
-
-- **在商店详情页**：购买按钮下面会多出一块区域，显示当前版本在 SteamPy 上的“代购价”和“CDK价”，并附带“代购购买”和“CDK购买”两个蓝色按钮，点一下直接跳转去 SteamPy 下单。
-- **在愿望单里**：每个游戏左侧会多出一个蓝色的“PY查价”按钮，你点一下它，它会自动去查询。查询成功后，按钮会变成两个小链接：
-  - **代**：代表“代购购买链接”
-  - **K**：代表“CDK激活码购买链接”
-  点击就能直接跳转。
-
-**最核心的价值（小白必看）**：
-> 有时候 Steam 官方卖 100 块，SteamPy 上代购可能只要 85 块，或者 CDK 只要 80 块。这个脚本相当于帮你“货比三家”，找出更便宜的那个买法，帮你省下几十块钱。而且它直接给你跳转链接，不用你自己去搜。
-
----
-
-## 四个脚本怎么配合用？（一句话总结）
-
-| 场景 | 用哪个脚本 |
-| :--- | :--- |
-| 我想知道这游戏现在买亏不亏 | 用 **史低查询** |
-| 我想知道这游戏是不是经常被当白菜甩卖 | 用 **进包标记** |
-| 我想知道这游戏要玩多久才通关 | 用 **HLTB** |
-| 我想找比 Steam 官方更便宜的购买渠道 | 用 **PY查价** |
-
-四个脚本各有分工，**互不打架**，装在一起就是一套完整的 Steam 购物决策辅助系统。看完价格看时长，看完时长看渠道，全方面帮你省钱省时间。😊
-
-
-
+发现功能失效、Steam 页面结构变化或第三方接口不可用时，欢迎通过 [GitHub Issues](https://github.com/WuLinLee/steam-extension-all-in-one/issues) 提交问题，并尽量附上出错页面、控制台报错和使用的脚本版本。
