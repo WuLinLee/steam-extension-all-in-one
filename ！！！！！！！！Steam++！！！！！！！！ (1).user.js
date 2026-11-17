@@ -389,6 +389,19 @@ steam-extension-all-in-one */
         return m ? m[1] : null;
     }
         GM_addStyle(`
+        .fa-bundle-detail-flag {
+            display: inline-block;
+            position: static;
+            margin-left: 10px;
+            padding: 1px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 3px;
+            background: #f59e0b;
+            color: #fff;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
         .fa-bundle-flag {
             position: absolute;
             right: 0;
@@ -424,11 +437,40 @@ steam-extension-all-in-one */
         flag.title = '此游戏曾出现在 ' + count + ' 个 bundle 中（数据来源: Barter.vg）';
         mountTarget.appendChild(flag);
     }
+    function addDetailBundleFlag() {
+        // 详情页只使用当前 URL 的 AppID，并且只挂到第一个普通游戏购买框。
+        // 不会把标记加到下面的 Bundle 购买框或推荐游戏上。
+        var match = location.pathname.match(/^\/app\/([0-9]+)/);
+        if (!match) return;
+        var count = getBundleCount(match[1]);
+        if (!count) return;
+
+        var title = document.querySelector('.game_area_purchase_game h2.title');
+        if (!title) return;
+
+        var flag = title.querySelector(':scope > .fa-bundle-detail-flag');
+        if (!flag) {
+            flag = document.createElement('span');
+            flag.className = 'fa-bundle-detail-flag';
+            flag.title = '此游戏曾出现在 ' + count + ' 个 bundle 中（数据来源: Barter.vg）';
+        }
+        flag.textContent = '进过' + count + '包';
+
+        // 有史低文字时紧跟史低；没有时放在普通购买框标题末尾。
+        var lowest = title.querySelector(':scope > .fa-single-page-lowest');
+        if (lowest) {
+            lowest.insertAdjacentElement('afterend', flag);
+        } else {
+            title.appendChild(flag);
+        }
+    }
+
     var CARD_SELECTOR = [
         '[data-ds-appid]',
         'a[href*="/app/"]'
     ].join(',');
     function scanCards() {
+        addDetailBundleFlag();
         document.querySelectorAll(CARD_SELECTOR).forEach(function(el) {
             if (el.tagName === 'A' && !el.querySelector('img')) return;
             // 数据晚于卡片加载时，后续扫描仍会尝试补上标记。
