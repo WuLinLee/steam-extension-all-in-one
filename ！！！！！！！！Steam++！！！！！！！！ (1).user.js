@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
-// @version      2.8
+// @version      2.9
 // @description  steam++
 // @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -422,20 +422,6 @@ steam-extension-all-in-one */
             white-space: nowrap;
             pointer-events: none;
         }
-        .fa-bundle-inline-flag {
-            display: inline-block;
-            margin-left: 6px;
-            padding: 1px 5px;
-            border-radius: 3px;
-            background: #f59e0b;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            line-height: 1.4;
-            vertical-align: middle;
-            white-space: nowrap;
-            pointer-events: none;
-        }
     `);
        function addBundleFlag(node) {
         if (!node) return;
@@ -485,55 +471,54 @@ steam-extension-all-in-one */
         }
     }
 
-    function addBundleItemFlags() {
-        // 详情页 Bundle 内的游戏是文字项目，不是普通封面卡片；只在 Bundle 区域追加行内标签。
-        document.querySelectorAll('.dynamic_bundle_description a[href*="/app/"]').forEach(function(link) {
-            var appid = getAppIdFromNode(link);
-            if (!appid) return;
-            var count = getBundleCount(appid);
-            if (!count) return;
+    function isExcludedBundleArea(node) {
+        if (!node || !node.closest) return false;
+        if (node.closest([
+            '.game_area_points_shop',
+            '#game_area_points_shop',
+            '.points_shop',
+            '[id*="points_shop"]',
+            '[class*="points_shop"]',
+            '.home_marketing_message',
+            '.game_area_news',
+            '#game_area_news',
+            '.game_area_announcements',
+            '#game_area_announcements'
+        ].join(','))) return true;
 
-            var flag = link.nextElementSibling;
-            if (!flag || !flag.classList.contains('fa-bundle-inline-flag')) {
-                flag = document.createElement('span');
-                flag.className = 'fa-bundle-inline-flag';
-                link.insertAdjacentElement('afterend', flag);
+        // Steam 有些区域没有稳定的 class/id；再检查最近几层容器自己的标题。
+        var parent = node;
+        for (var i = 0; parent && i < 5; i++, parent = parent.parentElement) {
+            var heading = parent.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > .block_title, :scope > .section_title');
+            if (heading && /points?\s*shop|点数商店|近期活动|活动与公告|公告|news|announcements/i.test(heading.textContent || '')) {
+                return true;
             }
-            flag.textContent = '进过' + count + '包';
-            flag.title = '此游戏曾出现在 ' + count + ' 个 bundle 中（数据来源: Barter.vg）';
-        });
+        }
+        return false;
     }
 
-    // 只扫描 Steam 明确的游戏卡片类型，避免把点数商店物品和新闻链接误判为游戏卡片。
+    // 恢复原来的通用识别，同时补充 Steam 首页主推/推荐区的官方卡片容器。
+    // 不再把 .bundle_package_item 这种整行容器当作封面卡片，避免角标脱离图片。
     var CARD_SELECTOR = [
-        'a.store_capsule',
-        'a.store_main_capsule',
-        'a.similar_grid_capsule',
-        'a.tab_item',
-        'a.search_result_row',
-        'a.match',
-        '.bundle_package_item',
-        '.wishlist_row'
+        '[data-ds-appid]',
+        'a[href*="/app/"]',
+        '.store_main_capsule',
+        '.home_area_spotlight',
+        '.home_content_item',
+        '.home_content.single > .gamelink',
+        '.curator_giant_capsule',
+        '.similar_grid_item'
     ].join(',');
 
     function scanCards() {
         addDetailBundleFlag();
-        addBundleItemFlags();
-
         document.querySelectorAll(CARD_SELECTOR).forEach(function(el) {
-            if (el.closest && el.closest('.dynamic_bundle_description, .game_area_points_shop, #game_area_points_shop, .home_marketing_message, .game_area_news, #game_area_news')) return;
+            if (isExcludedBundleArea(el)) return;
             if (el.tagName === 'A' && !el.querySelector('img')) return;
+            // 数据晚于卡片加载时，后续扫描仍会尝试补上标记。
             addBundleFlag(el);
             if (el.querySelector('.fa-bundle-flag')) el.dataset.faBundleScanned = '1';
         });
-
-        // Steam 新版愿望单使用 data-index 行容器；只处理其游戏行，不扫描整页通用 data-ds-appid。
-        if (location.pathname.includes('/wishlist/')) {
-            document.querySelectorAll('div[data-index]').forEach(function(row) {
-                if (row.closest && row.closest('.game_area_points_shop, #game_area_points_shop, .game_area_news, #game_area_news')) return;
-                addBundleFlag(row);
-            });
-        }
     }
 
     var scanTimer = null;
