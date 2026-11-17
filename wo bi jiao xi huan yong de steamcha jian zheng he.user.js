@@ -1,7 +1,9 @@
 // ==UserScript==
 // @name         !!!!!!!!我比较喜欢用的steam插件整合!!!!!!!!(再用steam db插件就完美了)!!!!!!!!!!
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
-// @version      1.4
+// @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
+// @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
+// @version      1.5
 // @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -444,6 +446,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             faBundleData = cached;
             faBundleLoading = false;
             console.log('[Bundle] 缓存命中: ' + Object.keys(cached).length + ' 条记录');
+            scanCards();
             return;
         }
 
@@ -462,6 +465,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                     GM_setValue(FA_BUNDLE_CACHE_KEY, json);
                     GM_setValue(FA_BUNDLE_CACHE_KEY_TIME, Date.now());
                     console.log('[Bundle] 数据加载完成: ' + Object.keys(json).length + ' 条记录');
+                    scanCards();
                 } catch(e) {
                     console.warn('[Bundle] 数据解析失败:', e);
                 } finally {
@@ -542,10 +546,10 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
 
     function scanCards() {
         document.querySelectorAll(CARD_SELECTOR).forEach(function(el) {
-            if (el.dataset.faBundleScanned) return;
-            el.dataset.faBundleScanned = '1';
             if (el.tagName === 'A' && !el.querySelector('img')) return;
+            // 数据晚于卡片加载时，后续扫描仍会尝试补上标记。
             addBundleFlag(el);
+            if (el.querySelector('.fa-bundle-flag')) el.dataset.faBundleScanned = '1';
         });
     }
 
@@ -947,40 +951,29 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
 
     const HltbMatcher = {
         ROMAN_MAP: { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 },
-
         romanToArabic(token) {
             if (!/^[ivxlcdm]+$/i.test(token)) return null;
             const lower = token.toLowerCase();
             let total = 0, prev = 0;
             for (let i = lower.length - 1; i >= 0; i--) {
                 const value = this.ROMAN_MAP[lower[i]];
-                if (!value) return null;
-                if (value < prev) total -= value;
-                else total += value;
+                if (value < prev) total -= value; else total += value;
                 prev = value;
             }
             return total > 0 ? String(total) : null;
         },
-
         normalize(input) {
             if (!input) return '';
-            let text = input.toLowerCase();
-            text = text.replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+            const text = String(input).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
             if (!text) return '';
-            text = text.split(' ').map(token => {
-                const arabic = this.romanToArabic(token);
-                return arabic !== null ? arabic : token;
-            }).join(' ');
-            return text;
+            return text.split(/\s+/).map(token => this.romanToArabic(token) || token).join(' ');
         },
-
         levenshtein(a, b) {
             if (a === b) return 0;
             if (!a.length) return b.length;
             if (!b.length) return a.length;
-            let prev = new Array(b.length + 1);
+            let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
             let curr = new Array(b.length + 1);
-            for (let j = 0; j <= b.length; j++) prev[j] = j;
             for (let i = 1; i <= a.length; i++) {
                 curr[0] = i;
                 for (let j = 1; j <= b.length; j++) {
@@ -991,33 +984,33 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             }
             return prev[b.length];
         },
-
         match(results, appid, title) {
-            if (!Array.isArray(results) || results.length === 0) return null;
-            const byAppid = results.find(r => r && String(r.profile_steam) === String(appid) && r.profile_steam);
+            if (!Array.isArray(results) || !results.length) return null;
+            const byAppid = results.find(r => r && r.profile_steam && String(r.profile_steam) === String(appid));
             if (byAppid) return { entry: byAppid, matchType: 'appid' };
-
-            const normalizedTitle = this.normalize(title);
-            if (!normalizedTitle) return null;
-
-            const byExact = results.find(r => r && this.normalize(r.game_name) === normalizedTitle);
-            if (byExact) return { entry: byExact, matchType: 'exact' };
-
+            const wanted = this.normalize(title);
+            if (!wanted) return null;
+            const exact = results.find(r => r && this.normalize(r.game_name) === wanted);
+            if (exact) return { entry: exact, matchType: 'exact' };
             let best = null;
-            for (const r of results) {
-                if (!r || !r.game_name) continue;
-                const candidate = this.normalize(r.game_name);
+            for (const entry of results) {
+                if (!entry || !entry.game_name) continue;
+                const candidate = this.normalize(entry.game_name);
                 if (!candidate) continue;
-                const distance = this.levenshtein(normalizedTitle, candidate);
-                const popularity = Number(r.comp_all_count) || 0;
-                if (!best || distance < best.distance || (distance === best.distance && popularity > best.popularity)) {
-                    best = { entry: r, distance, popularity };
+                const distance = this.levenshtein(wanted, candidate);
+                const popularity = Number(entry.comp_all_count) || 0;
+                if (!best || distance < best.distance ||
+                    (distance === best.distance && popularity > best.popularity)) {
+                    best = { entry, distance, popularity };
                 }
             }
-            return best ? { entry: best.entry, matchType: 'fuzzy', distance: best.distance } : null;
+            if (!best) return null;
+            // 不再无条件返回“最接近”的结果，防止把完全不同的游戏错误匹配。
+            const maxDistance = Math.max(2, Math.floor(wanted.length * 0.18));
+            if (best.distance > maxDistance) return null;
+            return { entry: best.entry, matchType: 'fuzzy', distance: best.distance };
         }
     };
-
     function getAppId() {
         const match = /\/app\/(\d+)/.exec(location.pathname);
         return match ? match[1] : null;
@@ -1495,10 +1488,11 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
             const subNames = {};
             if (gameData.package_groups) {
                 gameData.package_groups.forEach(group => {
-                    group.subs.forEach(sub => {
+                    (group.subs || []).forEach(sub => {
+                        if (!sub) return;
                         if (sub.can_get_free_license === '0' || sub.price_in_cents_with_discount > 0) {
                             subIds.push(sub.packageid);
-                            let name = sub.option_text.replace(/Purchase |Buy /gi, '').replace(/\(.*\)/, '').trim();
+                            let name = String(sub.option_text || '').replace(/Purchase |Buy /gi, '').replace(/\(.*\)/, '').trim();
                             subNames[sub.packageid] = name;
                         }
                     });
@@ -1534,9 +1528,14 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         proxyRequest(url, (data) => {
             if (data && data.success && data.result) {
                 const list = data.result.content || (Array.isArray(data.result) ? data.result : []);
-                let matches = list.filter(item => String(item.appId) === String(targetAppId));
+                const normalizeName = value => String(value || '').toLowerCase()
+                    .replace(/[™®©]/g, '')
+                    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+                    .trim();
+                let matches = list.filter(item => item && String(item.appId) === String(targetAppId));
                 if (matches.length === 0) {
-                    matches = list.filter(item => item.gameName.toLowerCase().includes(cleanName.toLowerCase())).slice(0, 3);
+                    const wanted = normalizeName(cleanName);
+                    matches = list.filter(item => item && normalizeName(item.gameName) === wanted).slice(0, 3);
                 }
                 matches.forEach(m => m.versionName = m.gameName);
                 callback(matches);
@@ -1544,6 +1543,12 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                 callback([]);
             }
         });
+    }
+
+    function escapeHTML(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[ch]));
     }
 
     function generateHTML(results) {
@@ -1565,6 +1570,8 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         let displayName = item.versionName || item.gameName || "版本";
         displayName = displayName.replace(/[¥$€£]\s*[\d,]+(\.\d{1,2})?/g, '').trim();
         if (!displayName) displayName = "版本";
+        displayName = escapeHTML(displayName);
+        const gameId = encodeURIComponent(String(item.id || ''));
 
         const dai = Number(item.daiPrice) || 0;
         const key = Number(item.keyPrice) || 0;
@@ -1573,10 +1580,10 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
         html += `<span style="font-weight:bold; color:#66c0f4; font-size:13px;">${displayName}</span>`;
         html += `<div style="display:flex; gap:8px;">`;
         if (dai > 0) {
-            html += `<a href="https://steampy.com/hotGameDetail?gameId=${item.id}" target="_blank" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">代购购买</a>`;
+            html += `<a href="https://steampy.com/hotGameDetail?gameId=${gameId}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">代购购买</a>`;
         }
         if (key > 0) {
-            html += `<a href="https://steampy.com/cdkDetail?name=cn&gameId=${item.id}" target="_blank" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">CDK购买</a>`;
+            html += `<a href="https://steampy.com/cdkDetail?name=cn&gameId=${gameId}" target="_blank" rel="noopener noreferrer" class="buy-btn" style="background:#2a475e; color:#fff; padding:2px 8px; border-radius:2px; text-decoration:none; font-size:12px;">CDK购买</a>`;
         }
         if (dai === 0 && key === 0) {
             html += `<span style="color:#888;">无购买选项</span>`;
@@ -1723,7 +1730,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
 
                         if (dai > 0) {
                             const a1 = document.createElement('a');
-                            a1.href = `https://steampy.com/hotGameDetail?gameId=${item.id}`;
+                            a1.href = `https://steampy.com/hotGameDetail?gameId=${gameId}`;
                             a1.target = '_blank';
                             a1.textContent = '代';
                             a1.style.cssText = `
@@ -1739,7 +1746,7 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
                         }
                         if (key > 0) {
                             const a2 = document.createElement('a');
-                            a2.href = `https://steampy.com/cdkDetail?name=cn&gameId=${item.id}`;
+                            a2.href = `https://steampy.com/cdkDetail?name=cn&gameId=${gameId}`;
                             a2.target = '_blank';
                             a2.textContent = 'K';
                             a2.style.cssText = `
