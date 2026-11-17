@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/wo%20bi%20jiao%20xi%20huan%20yong%20de%20steamcha%20jian%20zheng%20he.user.js
-// @version      1.5
+// @version      1.6
 // @description  整合史低查询、进包标记、HLTB通关时长、PY查价助手
 // @author       AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -260,11 +260,13 @@ K：代表“CDK激活码购买链接” 点击就能直接跳转。
 
         const observer = new MutationObserver(() => {
             clearTimeout(pendingTimer);
-            pendingTimer = setTimeout(() => { checkAndRequestNew(); }, 300);
+            pendingTimer = setTimeout(() => {
+                checkAndRequestNew();
+                restoreMissingFromCache();
+            }, 300);
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
-        setInterval(() => { restoreMissingFromCache(); }, 1000);
     }
 
     function checkAndRequestNew() {
