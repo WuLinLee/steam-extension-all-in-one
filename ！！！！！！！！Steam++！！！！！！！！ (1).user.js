@@ -3,7 +3,7 @@
 // @namespace   https://github.com/WuLinLee/steam-extension-all-in-one/
 // @updateURL    https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
 // @downloadURL  https://raw.githubusercontent.com/WuLinLee/steam-extension-all-in-one/main/%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81Steam%2B%2B%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%EF%BC%81%20%281%29.user.js
-// @version      2.3
+// @version      2.4
 // @description  steam++
 // @author         AI服务人类
 // @license      No general license · Remixed & AI‑refactored derivative work, non‑commercial study & personal‑use only
@@ -69,21 +69,7 @@ steam-extension-all-in-one */
 (function() {
     'use strict';
     if (!location.href.includes("/wishlist/")) return;
-    const COUNTRIES = {
-        'cn': { name: '🇨🇳 中国', currency: 'CNY' },
-        'jp': { name: '🇯🇵 日本', currency: 'JPY' },
-        'tr': { name: '🇹🇷 土耳其', currency: 'TRY' },
-        'us': { name: '🇺🇸 美国', currency: 'USD' },
-        'hk': { name: '🇭🇰 香港', currency: 'HKD' },
-    };
     const DEFAULT_COUNTRY = 'cn';
-    const EXCHANGE_TO_CNY = {
-        'CNY': 1,
-        'JPY': 0.048,
-        'TRY': 0.22,
-        'USD': 7.25,
-        'HKD': 0.92,
-    };
     const CURRENCY_SYMBOLS = {
         'CNY': '¥', 'JPY': '¥', 'TRY': 'TL', 'USD': '$', 'HKD': 'HK$',
     };
@@ -92,11 +78,6 @@ steam-extension-all-in-one */
         if (amount == null || isNaN(amount)) return '?';
         const sym = getSymbol(currency);
         return (currency === 'JPY') ? sym + Math.round(amount) : sym + amount.toFixed(2);
-    };
-    const toCNY = (amount, currency) => {
-        if (!amount || currency === 'CNY') return null;
-        const rate = EXCHANGE_TO_CNY[currency];
-        return rate ? (amount * rate).toFixed(2) : null;
     };
     let currentCountry = DEFAULT_COUNTRY;
     function fetchPrices(apps, subs, bundles, country) {
@@ -124,28 +105,17 @@ steam-extension-all-in-one */
             });
         });
     }
-    function createCountrySelect(onChange) {
-        const select = document.createElement('select');
-        select.className = 'shc-select';
-        for (const [code, info] of Object.entries(COUNTRIES)) {
-            const opt = document.createElement('option');
-            opt.value = code;
-            opt.textContent = info.name;
-            if (code === currentCountry) opt.selected = true;
-            select.appendChild(opt);
-        }
-        select.addEventListener('change', (e) => {
-            currentCountry = e.target.value;
-            GM_setValue('steamHistoryCountry', currentCountry);
-            allLoadedIds.clear();
-            wishlistPricesCache = {};
-            document.querySelectorAll('.game_lowest_price').forEach(e => e.remove());
-            clearTimeout(pendingTimer);
-            fetchAndUpdateWishlist();
-            if (onChange) onChange(currentCountry);
-        });
-        return select;
+    function createRefreshButton() {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'shc-refresh';
+        button.title = '刷新中国区史低价格';
+        button.setAttribute('aria-label', '刷新中国区史低价格');
+        button.innerHTML = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18.5 6L20 12M4 12l1.5 6A7 7 0 0 0 18.4 15"/></svg>';
+        button.addEventListener('click', refreshWishlistPrices);
+        return button;
     }
+
     function createPriceElement(info) {
         const lowest = info.lowest;
         const dateStr = new Date(lowest.timestamp).toLocaleDateString();
@@ -159,9 +129,10 @@ steam-extension-all-in-one */
     }
     let wishlistPricesCache = {};
     let allLoadedIds = new Set();
+    let pendingIds = new Set();
     let pendingTimer = null;
     function initWishlist() {
-        const rows = document.querySelectorAll('div.Panel[data-index]');
+        const rows = document.querySelectorAll('div[data-index]');
         if (rows.length === 0) {
             setTimeout(initWishlist, 500);
             return;
@@ -170,7 +141,7 @@ steam-extension-all-in-one */
             const controls = document.createElement('div');
             controls.id = 'wishlist-country-controls';
             controls.style.cssText = 'position:fixed; top:10px; right:10px; z-index:9999;';
-            controls.appendChild(createCountrySelect(() => {}));
+            controls.appendChild(createRefreshButton());
             document.body.appendChild(controls);
         }
         fetchAndUpdateWishlist();
@@ -181,7 +152,7 @@ steam-extension-all-in-one */
                 restoreMissingFromCache();
             }, 300);
         });
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
     }
     function checkAndRequestNew() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
@@ -193,8 +164,8 @@ steam-extension-all-in-one */
             if (!match) return;
             const type = match[1], id = match[2];
             const key = `${type}/${id}`;
-            if (!allLoadedIds.has(key)) {
-                allLoadedIds.add(key);
+            if (!allLoadedIds.has(key) && !pendingIds.has(key)) {
+                pendingIds.add(key);
                 if (type === 'app') neededApp.push(id);
                 else if (type === 'sub') neededSub.push(id);
                 else neededBundle.push(id);
@@ -209,8 +180,17 @@ steam-extension-all-in-one */
             const data = await fetchPrices(apps, subs, bundles, currentCountry);
             const prices = data.prices || {};
             Object.assign(wishlistPricesCache, prices);
+            apps.forEach(id => allLoadedIds.add('app/' + id));
+            subs.forEach(id => allLoadedIds.add('sub/' + id));
+            bundles.forEach(id => allLoadedIds.add('bundle/' + id));
             updateVisibleRows();
-        } catch (e) {}
+        } catch (e) {
+            // 请求失败时不标记为已加载，后续更新可以重试。
+        } finally {
+            apps.forEach(id => pendingIds.delete('app/' + id));
+            subs.forEach(id => pendingIds.delete('sub/' + id));
+            bundles.forEach(id => pendingIds.delete('bundle/' + id));
+        }
     }
     async function fetchAndUpdateWishlist() {
         const rows = document.querySelectorAll('div.Panel[data-index]');
@@ -223,8 +203,8 @@ steam-extension-all-in-one */
             if (!match) return;
             const type = match[1], id = match[2];
             const key = `${type}/${id}`;
-            if (!allLoadedIds.has(key)) {
-                allLoadedIds.add(key);
+            if (!allLoadedIds.has(key) && !pendingIds.has(key)) {
+                pendingIds.add(key);
                 if (type === 'app') appIds.push(id);
                 else if (type === 'sub') subIds.push(id);
                 else bundleIds.push(id);
@@ -238,12 +218,19 @@ steam-extension-all-in-one */
             const data = await fetchPrices(appIds, subIds, bundleIds, currentCountry);
             const prices = data.prices || {};
             Object.assign(wishlistPricesCache, prices);
+            appIds.forEach(id => allLoadedIds.add('app/' + id));
+            subIds.forEach(id => allLoadedIds.add('sub/' + id));
+            bundleIds.forEach(id => allLoadedIds.add('bundle/' + id));
             updateVisibleRows();
             progress.textContent = '更新完成';
             setTimeout(() => { progress.style.display = 'none'; }, 2000);
         } catch (e) {
             progress.textContent = '更新失败';
             setTimeout(() => { progress.style.display = 'none'; }, 3000);
+        } finally {
+            appIds.forEach(id => pendingIds.delete('app/' + id));
+            subIds.forEach(id => pendingIds.delete('sub/' + id));
+            bundleIds.forEach(id => pendingIds.delete('bundle/' + id));
         }
     }
     function updateVisibleRows() {
@@ -298,11 +285,22 @@ steam-extension-all-in-one */
                     const bottomContainer = row.querySelector('div.E4PXslhR-fI-');
                     if (bottomContainer) {
                         bottomContainer.appendChild(div);
+                    } else {
+                        row.insertBefore(div, row.firstChild);
                     }
                 }
             }
         });
     }
+    function refreshWishlistPrices() {
+        currentCountry = 'cn';
+        allLoadedIds.clear();
+        pendingIds.clear();
+        wishlistPricesCache = {};
+        document.querySelectorAll('.game_lowest_price').forEach(el => el.remove());
+        fetchAndUpdateWishlist();
+    }
+
     function getProgressDiv() {
         let div = document.getElementById('wishlist-progress');
         if (!div) {
@@ -314,13 +312,10 @@ steam-extension-all-in-one */
         return div;
     }
     GM_addStyle(`
-        .shc-select { background: #2c313f; color: #e2e8f0; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 2px 6px; font-size: 12px; }
+        .shc-refresh { display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; color:#c6d4df; background:transparent; border:0; cursor:pointer; }
+        .shc-refresh:hover { color:#fff; }
         .game_lowest_price { word-break: keep-all; }
     `);
-    const savedCountry = GM_getValue('steamHistoryCountry', DEFAULT_COUNTRY);
-    if (savedCountry && COUNTRIES[savedCountry]) {
-        currentCountry = savedCountry;
-    }
     initWishlist();
 })();
 
@@ -500,7 +495,7 @@ steam-extension-all-in-one */
             }
             if (needScan) scheduleScan();
         });
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
@@ -650,7 +645,7 @@ steam-extension-all-in-one */
                 observer.disconnect();
                 resolve(null);
             }, 9000);
-            observer.observe(document.body, { childList: true, subtree: true });
+            observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
         });
     }
 
@@ -885,12 +880,15 @@ steam-extension-all-in-one */
             }
             if (!gameName && row.querySelector('.title')) gameName = row.querySelector('.title').innerText.trim();
             if (!appId || !gameName) return;
-            let targetContainer = row.querySelector('.a3nhjc9lykk-');
+            let targetContainer = row.querySelector('.a3nhjc9lykk-')
+                || row.querySelector('div.E4PXslhR-fI-');
             if (!targetContainer) {
-                const btns = row.querySelectorAll('button');
-                for (let btn of btns) {
-                    if (btn.innerText.match(/(车|Cart|Add)/)) { targetContainer = btn.parentElement; break; }
-                }
+                const cartAction = Array.from(row.querySelectorAll('a, button')).find(el =>
+                    /添加到购物车|加入购物车|add to cart/i.test(
+                        (el.textContent || '') + ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.title || '')
+                    )
+                );
+                if (cartAction) targetContainer = cartAction.parentElement;
             }
             if (!targetContainer) return;
             row.dataset.cortana = "true";
@@ -953,6 +951,7 @@ steam-extension-all-in-one */
                             return;
                         }
                         const item = valid[0];
+                        const gameId = encodeURIComponent(String(item.id || item.gameId || ''));
                         const dai = Number(item.daiPrice) || 0;
                         const key = Number(item.keyPrice) || 0;
                         btn.innerHTML = '';
@@ -967,10 +966,11 @@ steam-extension-all-in-one */
                         btn.style.cursor = 'default';
                         btn.dataset.transformed = 'true';
                         btn.onclick = null;
-                        if (dai > 0) {
+                        if (dai > 0 && gameId) {
                             const a1 = document.createElement('a');
                             a1.href = `https://steampy.com/hotGameDetail?gameId=${gameId}`;
                             a1.target = '_blank';
+                            a1.rel = 'noopener noreferrer';
                             a1.textContent = '代';
                             a1.style.cssText = `
                                 color: #66c0f4;
@@ -983,10 +983,11 @@ steam-extension-all-in-one */
                             a1.onmouseleave = () => { a1.style.color = '#66c0f4'; };
                             btn.appendChild(a1);
                         }
-                        if (key > 0) {
+                        if (key > 0 && gameId) {
                             const a2 = document.createElement('a');
                             a2.href = `https://steampy.com/cdkDetail?name=cn&gameId=${gameId}`;
                             a2.target = '_blank';
+                            a2.rel = 'noopener noreferrer';
                             a2.textContent = 'K';
                             a2.style.cssText = `
                                 color: #66c0f4;
@@ -998,6 +999,14 @@ steam-extension-all-in-one */
                             a2.onmouseenter = () => { a2.style.color = '#fff'; };
                             a2.onmouseleave = () => { a2.style.color = '#66c0f4'; };
                             btn.appendChild(a2);
+                        }
+                        if (!btn.querySelector('a')) {
+                            btn.textContent = '无有效购买链接';
+                            btn.style.display = 'inline-block';
+                            btn.style.color = '#888';
+                            btn.style.borderColor = '#888';
+                            btn.style.cursor = 'default';
+                            return;
                         }
                     };
                     if (steamData && steamData.ids.length > 0) {
@@ -1023,7 +1032,7 @@ steam-extension-all-in-one */
             handleWishlistPage();
         }, 500);
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href', 'data-index'] });
     setTimeout(() => {
         handleStorePage();
         handleWishlistPage();
